@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "start": "bun prisma:generate && bun prisma:migrate:deploy && bun src/index.ts",
+    "start": "src/index.ts",
     "check": "bunx tsc --noEmit",
     "prisma:generate": "bunx prisma generate",
     "prisma:migrate:deploy": "bunx prisma migrate deploy"
