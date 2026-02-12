@@ -18,4 +18,6 @@ const app = new Elysia()
   .listen({
     port: env.PORT,
     hostname: "0.0.0.0"
-  }, () => console.log(`API running at ${app.server?.hostname}:${app.server?.port}`));
+  });
+
+console.log(`API running at ${app.server?.hostname}:${app.server?.port}`);
