@@ -15,6 +15,7 @@ const app = new Elysia()
   )
   .mount(auth.handler)
   .use(routes)
+  .get("/health", () => ({ ok: true }))
   .listen({
     port: env.PORT,
     hostname: "0.0.0.0"
