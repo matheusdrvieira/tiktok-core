@@ -15,6 +15,7 @@ const app = new Elysia()
   )
   .mount(auth.handler)
   .use(routes)
-  .listen(env.PORT);
-
-console.log(`API running at ${app.server?.hostname}:${app.server?.port}`);
+  .listen({
+    port: env.PORT,
+    hostname: "0.0.0.0"
+  }, () => console.log(`API running at ${app.server?.hostname}:${app.server?.port}`));
