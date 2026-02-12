@@ -4,6 +4,7 @@ import { env } from '../../shared/config/env';
 import { PrismaService } from '../database/prisma.service';
 
 const prisma = new PrismaService();
+const isProd = env.NODE_ENV === "production";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
@@ -14,14 +15,22 @@ export const auth = betterAuth({
     baseURL: env.BACKEND_URL,
     trustedOrigins: [env.FRONTEND_URL],
     advanced: {
+        defaultCookieAttributes: {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? "none" : "lax",
+            path: "/",
+            domain: isProd ? ".botzito.com.br" : undefined,
+        },
         cookies: {
             session_token: {
-                name: 'x-quizzio-token',
+                name: "x-quizzio-token",
                 attributes: {
                     httpOnly: true,
-                    secure: env.NODE_ENV === 'production',
-                    sameSite: 'lax',
-                    path: '/',
+                    secure: isProd,
+                    sameSite: isProd ? "none" : "lax",
+                    path: "/",
+                    domain: isProd ? ".botzito.com.br" : undefined,
                     maxAge: 60 * 60 * 24 * 7,
                 },
             },
