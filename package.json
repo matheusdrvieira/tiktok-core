@@ -12,12 +12,16 @@
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
+    "@prisma/adapter-libsql": "^7.4.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "@types/node": "^25.2.3",
+    "@types/pg": "^8.16.0",
     "axios": "^1.13.5",
     "better-auth": "^1.4.18",
     "dotenv": "^17.2.4",
     "elysia": "latest",
+    "pg": "^8.18.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
