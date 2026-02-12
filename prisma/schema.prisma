@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Users {
+  id            String         @id
+  name          String
+  email         String
+  emailVerified Boolean        @default(false)
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  sessions      Sessions[]
+  accounts      Accounts[]
+  integrations  Integrations[]
+  videos        Videos[]
+
+  @@unique([email])
+  @@map("users")
+}
+
+model Sessions {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Accounts {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  users                 Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verifications {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model Integrations {
+  id          String              @id @default(cuid())
+  userId      String
+  provider    IntegrationProvider
+  isActive    Boolean             @default(true)
+  credentials Json
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  users       Users               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
+  @@index([userId])
+  @@map("integrations")
+}
+
+enum IntegrationProvider {
+  TIKTOK
+  YOUTUBE
+  KWAI
+}
+
+model Videos {
+  id        String   @id @default(cuid())
+  userId    String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([url])
+  @@index([userId])
+  @@map("videos")
+}

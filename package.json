@@ -1,15 +1,28 @@
 {
-  "name": "app",
-  "version": "1.0.50",
+  "name": "core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "check": "bunx tsc --noEmit",
+    "prisma:generate": "bunx prisma generate",
+    "prisma:migrate:deploy": "bunx prisma migrate deploy"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/cors": "^1.4.1",
+    "@prisma/adapter-pg": "^7.4.0",
+    "@prisma/client": "^7.4.0",
+    "axios": "^1.13.5",
+    "better-auth": "^1.4.18",
+    "dotenv": "^17.2.4",
+    "elysia": "latest",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "bun-types": "latest"
-  },
-  "module": "src/index.js"
+    "bun-types": "latest",
+    "prisma": "^7.4.0",
+    "typescript": "^5.7.3"
+  }
 }
