@@ -5,14 +5,14 @@ import {
   IntegrationProvider,
 } from '../../../integrations/domain/entities/integrations.entity';
 import { IntegrationsRepository } from '../../../integrations/domain/repositories/integrations.repository';
-import { Repository } from '../../domain/repositories/tiktok.repository';
+import { TiktokRepository } from '../../domain/repositories/tiktok.repository';
 import { TokenResponse } from '../../domain/types/types';
 
 export class AuthenticateUseCase {
   private readonly stateTtlMs = 10 * 60 * 1000;
 
   constructor(
-    private readonly repository: Repository,
+    private readonly repository: TiktokRepository,
     private readonly integrationsRepository: IntegrationsRepository,
   ) { }
 

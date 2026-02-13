@@ -8,8 +8,8 @@ export const listIntegrationsController = new Elysia()
   .use(authGuard)
   .get(
     '/tiktok/integrations',
-    async () => {
-      return await listIntegrationsUseCase.execute();
+    async ({ user }) => {
+      return await listIntegrationsUseCase.execute(user.id);
     },
     {
       auth: true,

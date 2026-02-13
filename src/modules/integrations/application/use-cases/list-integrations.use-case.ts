@@ -4,7 +4,7 @@ import { IntegrationsRepository } from '../../domain/repositories/integrations.r
 export class ListIntegrationsUseCase {
   constructor(private readonly repository: IntegrationsRepository) {}
 
-  async execute(): Promise<Integration[]> {
-    return await this.repository.list();
+  async execute(userId: string): Promise<Integration[]> {
+    return await this.repository.list(userId);
   }
 }

@@ -1,4 +1,5 @@
 import { PrismaService } from '../../../../../shared/database/prisma.service';
+import { AsyncMaybe } from '../../../../../shared/core/domain/logic/maybe';
 import { decryptJson, encryptJson } from '../../../../../shared/utils/json-crypto';
 import {
   Integration,
@@ -7,7 +8,7 @@ import {
 import { IntegrationsRepository } from '../../../domain/repositories/integrations.repository';
 
 export class IntegrationsService implements IntegrationsRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(props: Integration): Promise<Integration> {
     const integration = await this.prisma.integrations.upsert({
@@ -40,25 +41,7 @@ export class IntegrationsService implements IntegrationsRepository {
     });
   }
 
-  async list(): Promise<Integration[]> {
-    const integrations = await this.prisma.integrations.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
-
-    return integrations.map((integration) =>
-      Integration.create({
-        id: integration.id,
-        userId: integration.userId,
-        provider: IntegrationProvider[integration.provider],
-        isActive: integration.isActive,
-        credentials: decryptJson(integration.credentials),
-        createdAt: integration.createdAt,
-        updatedAt: integration.updatedAt,
-      }),
-    );
-  }
-
-  async findByUserId(userId: string): Promise<Integration[]> {
+  async list(userId: string): Promise<Integration[]> {
     const integrations = await this.prisma.integrations.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
@@ -75,5 +58,31 @@ export class IntegrationsService implements IntegrationsRepository {
         updatedAt: integration.updatedAt,
       }),
     );
+  }
+
+  async findByUserId(
+    userId: string,
+    provider: IntegrationProvider,
+  ): AsyncMaybe<Integration> {
+    const integration = await this.prisma.integrations.findUnique({
+      where: {
+        userId_provider: {
+          userId,
+          provider,
+        },
+      },
+    });
+
+    if (!integration) return null;
+
+    return Integration.create({
+      id: integration.id,
+      userId: integration.userId,
+      provider: IntegrationProvider[integration.provider],
+      isActive: integration.isActive,
+      credentials: decryptJson(integration.credentials),
+      createdAt: integration.createdAt,
+      updatedAt: integration.updatedAt,
+    });
   }
 }
