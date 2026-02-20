@@ -1,34 +1,8 @@
 {
-  "name": "core",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts",
-    "check": "bunx tsc --noEmit",
-    "prisma:generate": "bunx prisma generate",
-    "prisma:migrate:deploy": "bunx prisma migrate deploy"
-  },
-  "dependencies": {
-    "@elysiajs/cors": "^1.4.1",
-    "@prisma/adapter-libsql": "^7.4.0",
-    "@prisma/adapter-pg": "^7.4.0",
-    "@prisma/client": "^7.4.0",
-    "@types/node": "^25.2.3",
-    "@types/pg": "^8.16.0",
-    "axios": "^1.13.5",
-    "better-auth": "^1.4.18",
-    "dotenv": "^17.2.4",
-    "elysia": "latest",
-    "ollama": "^0.6.3",
-    "openai": "^6.22.0",
-    "pg": "^8.18.0",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
-    "bun-types": "latest",
-    "prisma": "^7.4.0",
-    "typescript": "^5.7.3"
-  }
+    "name": "quizzio",
+    "private": true,
+    "workspaces": [
+        "core",
+        "mastra-mcp"
+    ]
 }
