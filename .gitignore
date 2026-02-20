@@ -4,4 +4,4 @@
 # Logs
 **/*.log
 
-**/minio-data
+minio-data
