@@ -4,7 +4,6 @@ import { BucketRepository } from "../../../domain/repositories/bucket.repository
 
 export class MinioService implements BucketRepository {
     private readonly client: S3Client;
-    private readonly bucketName = "tiktok";
 
     constructor() {
         this.client = new S3Client({
@@ -12,7 +11,7 @@ export class MinioService implements BucketRepository {
             secretAccessKey: env.MINIO_SECRET_KEY,
             endpoint: env.MINIO_ENDPOINT,
             region: "us-east-1",
-            bucket: this.bucketName,
+            bucket: env.MINIO_BUCKET_NAME,
         });
     }
 
@@ -29,7 +28,7 @@ export class MinioService implements BucketRepository {
 
         return {
             key: input.key,
-            url: `${env.MINIO_ENDPOINT}/${this.bucketName}/${input.key}`,
+            url: `${env.MINIO_ENDPOINT}/${env.MINIO_BUCKET_NAME}/${input.key}`,
         };
     }
 

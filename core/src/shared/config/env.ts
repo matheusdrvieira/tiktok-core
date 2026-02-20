@@ -19,6 +19,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1),
   TTS_BASE_URL: z.url().default('http://localhost:8880'),
   MINIO_ENDPOINT: z.url().min(1),
+  MINIO_BUCKET_NAME: z.string().min(1),
   MINIO_ACCESS_KEY: z.string().min(1),
   MINIO_SECRET_KEY: z.string().min(1),
 });
