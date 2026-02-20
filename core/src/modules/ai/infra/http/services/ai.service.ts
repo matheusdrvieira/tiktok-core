@@ -101,14 +101,17 @@ export class AiService extends AiRepository {
   async generateNarrationOpenAi(
     input: GenerateNarrationInput,
   ): Promise<GenerateNarrationOutput> {
-    const speech = await this.openai.audio.speech.create({
+    return await this.openai.audio.speech.create({
       model: 'gpt-4o-mini-tts',
       voice: 'onyx',
       input: input.text,
       response_format: 'mp3',
-    });
-
-    return { audioBuffer: Buffer.from(await speech.arrayBuffer()) };
+    }).then(async data => {
+      console.log(data)
+      return {
+        audioBuffer: Buffer.from(await data.arrayBuffer())
+      }
+    }).catch(err => console.log(err) as any);
   }
 
   private quizPrompt(props: GenerateQuizInput) {
@@ -131,12 +134,15 @@ export class AiService extends AiRepository {
           "2) Cada pergunta deve ter 4 alternativas no campo answers.",
           "3) Deve existir apenas 1 resposta correta por pergunta.",
           "4) correctAnswer deve ser exatamente uma das alternativas do campo answers.",
-          `5) O campo "title" deve ser curto, com tom viral e relacionado a "${props.reference}".`,
-          '6) O "title" deve ter exatamente 2 linhas:',
-          "   - Linha 1: título curto.",
-          "   - Linha 2: apenas hashtags (de 2 a 5), podem ser separadas por espaço ou coladas, exemplo: #naruto#quiz#foryou",
-          "7) Não misture com outras referências, franquias, personagens ou universos.",
-          "8) Não envie markdown, não envie texto fora do JSON.",
+          `5) O campo "title" é obrigatório e deve estar relacionado a "${props.reference}".`,
+          '6) Formato EXATO do "title" (string com duas linhas separadas por \\n):',
+          "   - Linha 1: título curto (máximo 70 caracteres), sem hashtags.",
+          "   - Linha 2: somente hashtags (mínimo 2 e máximo 5), sem texto extra.",
+          "   - Hashtags separadas por espaço: #naruto #quiz #foryou.",
+          '7) Exemplo válido de "title": "Super Onze: desafio final\\n#superonze #quiz #anime".',
+          '8) Exemplo inválido de "title": "Super Onze #quiz" (faltou segunda linha só de hashtags).',
+          "9) Não misture com outras referências, franquias, personagens ou universos.",
+          "10) Não envie markdown, não envie texto fora do JSON.",
         ].join("\n"),
       },
     ];

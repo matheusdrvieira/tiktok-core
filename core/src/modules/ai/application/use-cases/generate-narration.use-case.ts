@@ -1,5 +1,5 @@
-import { UploadFileUseCase } from "../../../bucket/application/use-cases/upload-file.use-case";
 import { env } from "../../../../shared/config/env";
+import { UploadFileUseCase } from "../../../bucket/application/use-cases/upload-file.use-case";
 import { AiRepository } from "../../domain/repositories/ai.repository";
 import {
     GenerateQuizNarrationInput,
