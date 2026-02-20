@@ -6,16 +6,22 @@ export const authGuard = new Elysia({ name: 'better-auth' })
   .macro({
     auth: {
       async resolve({ status, request: { headers } }) {
-        const session = await auth.api.getSession({
-          headers,
-        });
+        try {
+          const session = await auth.api.getSession({
+            headers,
+          });
 
-        if (!session) return status(401);
+          if (!session) {
+            return status(401, { message: 'Não autenticado.' });
+          }
 
-        return {
-          user: session.user,
-          session: session.session,
-        };
+          return {
+            user: session.user,
+            session: session.session,
+          };
+        } catch (err) {
+          return status(500, { message: 'Falha ao validar sessão.' });
+        }
       },
     },
   });

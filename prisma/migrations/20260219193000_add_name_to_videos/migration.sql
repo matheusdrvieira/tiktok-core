@@ -1,0 +1,2 @@
+ALTER TABLE "videos"
+ADD COLUMN "name" TEXT NOT NULL DEFAULT '';

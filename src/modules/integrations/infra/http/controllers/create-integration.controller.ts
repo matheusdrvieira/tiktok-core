@@ -5,25 +5,27 @@ import {
   Integration,
   IntegrationProvider,
 } from '../../../domain/entities/integrations.entity';
+import { IntegrationPresenter } from '../presenters/integration.presenter';
 
 const createIntegrationUseCase = makeCreateIntegrationUseCase();
 
 export const createIntegrationController = new Elysia()
   .use(authGuard)
-  .post('/tiktok/integrations',
-    async ({ body }) => {
-      return await createIntegrationUseCase.execute(
+  .post('/integrations',
+    async ({ body, user }) => {
+      const integration = await createIntegrationUseCase.execute(
         Integration.create({
-          userId: body.userId,
+          userId: user.id,
           provider: body.provider,
           isActive: body.isActive,
           credentials: body.credentials,
         }),
       );
+
+      return IntegrationPresenter.toHttp(integration);
     },
     {
       body: t.Object({
-        userId: t.String({ minLength: 1 }),
         provider: t.Enum(IntegrationProvider),
         isActive: t.Optional(t.Boolean()),
         credentials: t.Object({}, { additionalProperties: true }),

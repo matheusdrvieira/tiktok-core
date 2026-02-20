@@ -1,4 +1,6 @@
 import {
+  CreatorInfoQueryInput,
+  CreatorInfoQueryOutput,
   DirectPostInitInput,
   DirectPostInitOutput,
   DirectPostUploadInput,
@@ -14,6 +16,9 @@ export abstract class TiktokRepository {
   abstract refreshToken(
     props: RefreshTokenRequest,
   ): Promise<RefreshTokenResponse>;
+  abstract queryCreatorInfo(
+    input: CreatorInfoQueryInput,
+  ): Promise<CreatorInfoQueryOutput>;
   abstract initDirectPost(
     input: DirectPostInitInput,
   ): Promise<DirectPostInitOutput>;

@@ -13,20 +13,12 @@ export const directPostController = new Elysia()
         userId: user.id,
         videoPath: body.videoPath,
         title: body.title,
-        privacyLevel: body.privacyLevel,
-        disableComment: body.disableComment,
-        disableDuet: body.disableDuet,
-        disableStitch: body.disableStitch,
       });
     },
     {
       body: t.Object({
         videoPath: t.String({ minLength: 1 }),
-        title: t.Optional(t.String()),
-        privacyLevel: t.Optional(t.String()),
-        disableComment: t.Optional(t.Boolean()),
-        disableDuet: t.Optional(t.Boolean()),
-        disableStitch: t.Optional(t.Boolean()),
+        title: t.String({ minLength: 1 }),
       }),
       auth: true,
     },

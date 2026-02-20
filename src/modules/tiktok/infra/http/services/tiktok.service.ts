@@ -3,6 +3,8 @@ import { createReadStream } from 'node:fs';
 import { env } from '../../../../../shared/config/env';
 import { TiktokRepository } from '../../../domain/repositories/tiktok.repository';
 import {
+  CreatorInfoQueryInput,
+  CreatorInfoQueryOutput,
   DirectPostInitInput,
   DirectPostInitOutput,
   DirectPostUploadInput,
@@ -23,10 +25,12 @@ enum TiktokPrivacyLevelEnum {
   SELF_ONLY = "SELF_ONLY"
 }
 
+const FILE_UPLOAD_SOURCE = 'FILE_UPLOAD';
+
 export class TiktokService extends TiktokRepository {
   private readonly authorizeEndpoint =
     'https://www.tiktok.com/v2/auth/authorize/';
-  private readonly scope = 'user.info.basic';
+  private readonly scope = 'user.info.basic,video.publish';
 
   getAuthorizationUrl(state: string): string {
     const params = new URLSearchParams({
@@ -89,6 +93,34 @@ export class TiktokService extends TiktokRepository {
     };
   }
 
+  async queryCreatorInfo(
+    input: CreatorInfoQueryInput,
+  ): Promise<CreatorInfoQueryOutput> {
+    const { data } = await api.post(
+      '/post/publish/creator_info/query/',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${input.accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    const creatorInfo = data.data;
+
+    return {
+      creatorAvatarUrl: creatorInfo.creator_avatar_url,
+      creatorUsername: creatorInfo.creator_username,
+      creatorNickname: creatorInfo.creator_nickname,
+      privacyLevelOptions: creatorInfo.privacy_level_options,
+      commentDisabled: creatorInfo.comment_disabled,
+      duetDisabled: creatorInfo.duet_disabled,
+      stitchDisabled: creatorInfo.stitch_disabled,
+      maxVideoPostDurationSec: creatorInfo.max_video_post_duration_sec,
+    };
+  }
+
   async initDirectPost(
     input: DirectPostInitInput,
   ): Promise<DirectPostInitOutput> {
@@ -97,36 +129,40 @@ export class TiktokService extends TiktokRepository {
       {
         post_info: {
           title: input.title,
-          privacy_level: TiktokPrivacyLevelEnum.PUBLIC_TO_EVERYONE,
+          privacy_level: TiktokPrivacyLevelEnum.SELF_ONLY,
           disable_comment: false,
           disable_duet: true,
           disable_stitch: true,
         },
         source_info: {
-          source: 'FILE_UPLOAD',
+          source: FILE_UPLOAD_SOURCE,
+          video_size: input.videoSize,
+          chunk_size: input.videoSize,
+          total_chunk_count: 1,
         },
       },
       {
         headers: {
           Authorization: `Bearer ${input.accessToken}`,
           'Content-Type': 'application/json',
-        }
-      }
+        },
+      },
     );
 
     return {
-      publishId: data.publish_id,
-      uploadUrl: data.upload_url
+      publishId: data?.data?.publish_id,
+      uploadUrl: data?.data?.upload_url,
     };
   }
 
   async uploadDirectPostVideo(
     input: DirectPostUploadInput,
   ): Promise<DirectPostUploadOutput> {
-    const { data } = await axios.put(input.uploadUrl, createReadStream(input.videoPath), {
+    await axios.put(input.uploadUrl, createReadStream(input.videoPath), {
       headers: {
         'Content-Type': 'video/mp4',
         'Content-Length': String(input.contentLength),
+        'Content-Range': `bytes 0-${input.contentLength - 1}/${input.contentLength}`,
       },
       responseType: 'text',
       maxBodyLength: Infinity,
@@ -134,8 +170,8 @@ export class TiktokService extends TiktokRepository {
     });
 
     return {
-      publishId: data.publish_id,
-      uploadUrl: data.upload_url
+      publishId: '',
+      uploadUrl: input.uploadUrl
     };
   }
 }

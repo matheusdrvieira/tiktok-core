@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { env } from '../../shared/config/env';
+import { env } from '../config/env';
 import { PrismaService } from '../database/prisma.service';
 
 const prisma = new PrismaService();

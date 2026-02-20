@@ -3,12 +3,13 @@ import { Video } from '../../../domain/entities/videos.entity';
 import { VideosRepository } from '../../../domain/repositories/videos.repository';
 
 export class VideosService implements VideosRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(props: Video): Promise<Video> {
     const video = await this.prisma.videos.create({
       data: {
         userId: props.userId,
+        name: props.name,
         url: props.url,
       },
     });
@@ -16,6 +17,7 @@ export class VideosService implements VideosRepository {
     return Video.create({
       id: video.id,
       userId: video.userId,
+      name: video.name,
       url: video.url,
       createdAt: video.createdAt,
       updatedAt: video.updatedAt,
@@ -32,6 +34,7 @@ export class VideosService implements VideosRepository {
       Video.create({
         id: video.id,
         userId: video.userId,
+        name: video.name,
         url: video.url,
         createdAt: video.createdAt,
         updatedAt: video.updatedAt,

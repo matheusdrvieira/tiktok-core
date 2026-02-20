@@ -1,4 +1,7 @@
-import { stat } from 'node:fs/promises';
+import axios from 'axios';
+import { mkdtemp, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import {
   Integration,
   IntegrationProvider,
@@ -6,6 +9,39 @@ import {
 import { IntegrationsRepository } from '../../../integrations/domain/repositories/integrations.repository';
 import { TiktokRepository } from '../../domain/repositories/tiktok.repository';
 import { DirectPostRequest, DirectPostResponse } from '../../domain/types/types';
+
+const isHttpUrl = (value: string): boolean => /^https?:\/\//i.test(value);
+
+const resolveVideoPath = async (
+  videoPath: string,
+): Promise<{
+  path: string;
+  cleanup: () => Promise<void>;
+}> => {
+  if (!isHttpUrl(videoPath)) {
+    return {
+      path: videoPath,
+      cleanup: async () => undefined,
+    };
+  }
+
+  const tempDir = await mkdtemp(path.join(tmpdir(), 'quizzio-tiktok-upload-'));
+  const tempPath = path.join(tempDir, 'rendered-video.mp4');
+
+  const response = await axios.get(videoPath, {
+    responseType: 'arraybuffer',
+    timeout: 0,
+  });
+
+  await writeFile(tempPath, Buffer.from(response.data as ArrayBuffer));
+
+  return {
+    path: tempPath,
+    cleanup: async () => {
+      await rm(tempDir, { recursive: true, force: true });
+    },
+  };
+};
 
 export class DirectPostUseCase {
   constructor(
@@ -25,50 +61,53 @@ export class DirectPostUseCase {
       refreshToken: integration?.credentials?.refreshToken as string
     });
 
-    const fileStat = await stat(props.videoPath);
+    const videoSource = await resolveVideoPath(props.videoPath);
 
-    if (!fileStat.size || fileStat.size <= 0) {
-      throw new Error('Video file is empty');
+    try {
+      const fileStat = await stat(videoSource.path);
+
+      if (!fileStat.size || fileStat.size <= 0) {
+        throw new Error('Video file is empty');
+      }
+
+      const { publishId, uploadUrl } = await this.tiktokRepository.initDirectPost({
+        accessToken: refreshedToken.accessToken,
+        title: props.title,
+        videoSize: fileStat.size,
+      });
+
+      if (!publishId || !uploadUrl) {
+        throw new Error("TikTok init missing publish_id/upload_url",);
+      }
+
+      await this.tiktokRepository.uploadDirectPostVideo({
+        uploadUrl,
+        videoPath: videoSource.path,
+        contentLength: fileStat.size,
+      });
+
+      await this.integrationsRepository.create(
+        Integration.create({
+          userId: integration.userId,
+          provider: IntegrationProvider.TIKTOK,
+          isActive: integration.isActive ?? true,
+          credentials: {
+            ...integration.credentials,
+            accessToken: refreshedToken.accessToken,
+            refreshToken: refreshedToken.refreshToken,
+            expiresIn: refreshedToken.expiresIn,
+            refreshExpiresIn: refreshedToken.refreshExpiresIn,
+            openId: refreshedToken.openId
+          },
+        }),
+      );
+
+      return {
+        publishId,
+        uploadUrl,
+      };
+    } finally {
+      await videoSource.cleanup();
     }
-
-    const { publishId, uploadUrl } = await this.tiktokRepository.initDirectPost({
-      accessToken: refreshedToken.accessToken,
-      title: props.title,
-      privacyLevel: props.privacyLevel,
-      disableComment: props.disableComment,
-      disableDuet: props.disableDuet,
-      disableStitch: props.disableStitch,
-    });
-
-    if (!publishId || !uploadUrl) {
-      throw new Error("TikTok init missing publish_id/upload_url",);
-    }
-
-    await this.tiktokRepository.uploadDirectPostVideo({
-      uploadUrl,
-      videoPath: props.videoPath,
-      contentLength: fileStat.size,
-    });
-
-    await this.integrationsRepository.create(
-      Integration.create({
-        userId: integration.userId,
-        provider: IntegrationProvider.TIKTOK,
-        isActive: integration.isActive ?? true,
-        credentials: {
-          ...integration.credentials,
-          accessToken: refreshedToken.accessToken,
-          refreshToken: refreshedToken.refreshToken,
-          expiresIn: refreshedToken.expiresIn,
-          refreshExpiresIn: refreshedToken.refreshExpiresIn,
-          openId: refreshedToken.openId
-        },
-      }),
-    );
-
-    return {
-      publishId,
-      uploadUrl,
-    };
   }
 }
