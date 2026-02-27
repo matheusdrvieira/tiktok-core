@@ -92,54 +92,64 @@ export class YoutubeService extends YoutubeRepository {
   }
 
   async uploadVideo(input: UploadVideoInput): Promise<UploadVideoOutput> {
-    const uploadUrl = await this.initResumableUpload(input);
-    const videoId = await this.uploadBinary(
-      uploadUrl,
-      input.videoPath,
-      input.videoSize,
-    );
+    try {
+      const uploadUrl = await this.initResumableUpload(input);
+      const videoId = await this.uploadBinary(
+        uploadUrl,
+        input.videoPath,
+        input.videoSize,
+      );
 
-    return { videoId };
+      return { videoId };
+    } catch (err) {
+      console.log('[youtube][uploadVideo] error:', err);
+      throw new Error((err as Error).message);
+    }
   }
 
   private async initResumableUpload(input: UploadVideoInput): Promise<string> {
-    const { headers } = await youtubeApi.post(
-      '/upload/youtube/v3/videos',
-      {
-        snippet: {
-          title: input.title,
-          description: input.description,
-          ...(input.tags.length > 0 ? { tags: input.tags } : {}),
+    try {
+      const { headers } = await youtubeApi.post(
+        '/upload/youtube/v3/videos',
+        {
+          snippet: {
+            title: input.title,
+            description: input.description,
+            ...(input.tags.length > 0 ? { tags: input.tags } : {}),
+          },
+          status: {
+            privacyStatus: input.privacyStatus,
+            selfDeclaredMadeForKids: false,
+          },
         },
-        status: {
-          privacyStatus: input.privacyStatus,
-          selfDeclaredMadeForKids: false,
+        {
+          params: {
+            uploadType: 'resumable',
+            part: 'snippet,status',
+          },
+          headers: {
+            Authorization: `Bearer ${input.accessToken}`,
+            'Content-Type': 'application/json; charset=UTF-8',
+            'X-Upload-Content-Type': 'video/mp4',
+            'X-Upload-Content-Length': String(input.videoSize),
+          },
         },
-      },
-      {
-        params: {
-          uploadType: 'resumable',
-          part: 'snippet,status',
-        },
-        headers: {
-          Authorization: `Bearer ${input.accessToken}`,
-          'Content-Type': 'application/json; charset=UTF-8',
-          'X-Upload-Content-Type': 'video/mp4',
-          'X-Upload-Content-Length': String(input.videoSize),
-        },
-      },
-    );
+      );
 
-    const uploadUrlHeader = headers.location;
-    const uploadUrl = Array.isArray(uploadUrlHeader)
-      ? uploadUrlHeader[0]
-      : uploadUrlHeader;
+      const uploadUrlHeader = headers.location;
+      const uploadUrl = Array.isArray(uploadUrlHeader)
+        ? uploadUrlHeader[0]
+        : uploadUrlHeader;
 
-    if (typeof uploadUrl !== 'string' || uploadUrl.length === 0) {
-      throw new Error('YouTube upload initialization missing upload URL.');
+      if (typeof uploadUrl !== 'string' || uploadUrl.length === 0) {
+        throw new Error('YouTube upload initialization missing upload URL.');
+      }
+
+      return uploadUrl;
+    } catch (err) {
+      console.log('[youtube][initResumableUpload] error:', err);
+      throw new Error((err as Error).message);
     }
-
-    return uploadUrl;
   }
 
   private async uploadBinary(
@@ -147,23 +157,28 @@ export class YoutubeService extends YoutubeRepository {
     videoPath: string,
     contentLength: number,
   ): Promise<string> {
-    const { data } = await axios.put(uploadUrl, createReadStream(videoPath), {
-      headers: {
-        'Content-Type': 'video/mp4',
-        'Content-Length': String(contentLength),
-      },
-      responseType: 'json',
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity,
-      timeout: 0,
-    });
+    try {
+      const { data } = await axios.put(uploadUrl, createReadStream(videoPath), {
+        headers: {
+          'Content-Type': 'video/mp4',
+          'Content-Length': String(contentLength),
+        },
+        responseType: 'json',
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+        timeout: 0,
+      });
 
-    const videoId = data?.id;
+      const videoId = data?.id;
 
-    if (typeof videoId !== 'string' || videoId.length === 0) {
-      throw new Error('YouTube upload response missing video id.');
+      if (typeof videoId !== 'string' || videoId.length === 0) {
+        throw new Error('YouTube upload response missing video id.');
+      }
+
+      return videoId;
+    } catch (err) {
+      console.log('[youtube][uploadBinary] error:', err);
+      throw new Error((err as Error).message);
     }
-
-    return videoId;
   }
 }

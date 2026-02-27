@@ -124,57 +124,67 @@ export class TiktokService extends TiktokRepository {
   async initDirectPost(
     input: DirectPostInitInput,
   ): Promise<DirectPostInitOutput> {
-    const { data } = await api.post(
-      '/post/publish/video/init/',
-      {
-        post_info: {
-          title: input.title,
-          privacy_level:
-            env.NODE_ENV === 'development'
-              ? TiktokPrivacyLevelEnum.SELF_ONLY
-              : TiktokPrivacyLevelEnum.PUBLIC_TO_EVERYONE,
-          disable_comment: false,
-          disable_duet: true,
-          disable_stitch: true,
+    try {
+      const { data } = await api.post(
+        '/post/publish/video/init/',
+        {
+          post_info: {
+            title: input.title,
+            privacy_level:
+              env.NODE_ENV === 'development'
+                ? TiktokPrivacyLevelEnum.SELF_ONLY
+                : TiktokPrivacyLevelEnum.PUBLIC_TO_EVERYONE,
+            disable_comment: false,
+            disable_duet: true,
+            disable_stitch: true,
+          },
+          source_info: {
+            source: FILE_UPLOAD_SOURCE,
+            video_size: input.videoSize,
+            chunk_size: input.videoSize,
+            total_chunk_count: 1,
+          },
         },
-        source_info: {
-          source: FILE_UPLOAD_SOURCE,
-          video_size: input.videoSize,
-          chunk_size: input.videoSize,
-          total_chunk_count: 1,
+        {
+          headers: {
+            Authorization: `Bearer ${input.accessToken}`,
+            'Content-Type': 'application/json',
+          },
         },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${input.accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
+      );
 
-    return {
-      publishId: data?.data?.publish_id,
-      uploadUrl: data?.data?.upload_url,
-    };
+      return {
+        publishId: data?.data?.publish_id,
+        uploadUrl: data?.data?.upload_url,
+      };
+    } catch (err) {
+      console.log('[tiktok][initDirectPost] error:', err);
+      throw new Error((err as Error).message);
+    }
   }
 
   async uploadDirectPostVideo(
     input: DirectPostUploadInput,
   ): Promise<DirectPostUploadOutput> {
-    await axios.put(input.uploadUrl, createReadStream(input.videoPath), {
-      headers: {
-        'Content-Type': 'video/mp4',
-        'Content-Length': String(input.contentLength),
-        'Content-Range': `bytes 0-${input.contentLength - 1}/${input.contentLength}`,
-      },
-      responseType: 'text',
-      maxBodyLength: Infinity,
-      maxContentLength: Infinity,
-    });
+    try {
+      await axios.put(input.uploadUrl, createReadStream(input.videoPath), {
+        headers: {
+          'Content-Type': 'video/mp4',
+          'Content-Length': String(input.contentLength),
+          'Content-Range': `bytes 0-${input.contentLength - 1}/${input.contentLength}`,
+        },
+        responseType: 'text',
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
+      });
 
-    return {
-      publishId: '',
-      uploadUrl: input.uploadUrl
-    };
+      return {
+        publishId: '',
+        uploadUrl: input.uploadUrl
+      };
+    } catch (err) {
+      console.log('[tiktok][uploadDirectPostVideo] error:', err);
+      throw new Error((err as Error).message);
+    }
   }
 }
