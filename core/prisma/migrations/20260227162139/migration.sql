@@ -109,7 +109,7 @@ CREATE TABLE "quiz_questions" (
     "id" TEXT NOT NULL,
     "quizId" TEXT NOT NULL,
     "question" TEXT NOT NULL,
-    "correctOptionId" TEXT NOT NULL,
+    "correctAnswerIndex" INTEGER NOT NULL,
     "questionPath" TEXT,
     "answerCorrectPath" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
