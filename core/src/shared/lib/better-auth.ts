@@ -9,7 +9,7 @@ const isProd = env.NODE_ENV === "production";
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: 'postgresql',
-        usePlural: true,
+        usePlural: true
     }),
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BACKEND_URL,
@@ -32,9 +32,9 @@ export const auth = betterAuth({
                     path: "/",
                     domain: isProd ? ".botzito.com.br" : undefined,
                     maxAge: 60 * 60 * 24 * 7,
-                },
-            },
-        },
+                }
+            }
+        }
     },
     socialProviders: {
         google: {
