@@ -14,12 +14,15 @@ export type QuizQuestion = {
   question: string;
   options: QuizOption[];
   answer: {
-    correctOptionId: string;
+    correctAnswerIndex: number;
   };
 };
 
 export type GenerateQuizOutput = {
   title: string;
+  hashtags: string;
+  category: number;
+  description: string;
   questions: QuizQuestion[];
 };
 
@@ -30,11 +33,17 @@ export type NarratedQuizQuestion = QuizQuestion & {
 
 export interface GenerateQuizNarrationInput {
   title: string;
+  hashtags: string;
+  category: number;
+  description: string;
   questions: QuizQuestion[];
 }
 
 export interface GenerateQuizNarrationOutput {
   title: string;
+  hashtags: string;
+  category: number;
+  description: string;
   questions: NarratedQuizQuestion[];
 }
 

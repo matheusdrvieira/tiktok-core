@@ -8,7 +8,7 @@ const findVideosByUserUseCase = makeFindVideosByUserUseCase();
 export const getVideosByUserController = new Elysia()
   .use(authGuard)
   .get(
-    '/tiktok/videos/user',
+    '/videos',
     async ({ user }) => {
       const videos = await findVideosByUserUseCase.execute(user.id);
       return videos.map(VideoPresenter.toHttp);

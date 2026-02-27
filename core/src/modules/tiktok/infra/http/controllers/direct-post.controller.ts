@@ -11,12 +11,14 @@ export const directPostController = new Elysia()
     async ({ body, user }) => {
       return await directPostUseCase.execute({
         userId: user.id,
+        videoId: body.videoId,
         videoPath: body.videoPath,
         title: body.title,
       });
     },
     {
       body: t.Object({
+        videoId: t.Optional(t.String({ minLength: 1 })),
         videoPath: t.String({ minLength: 1 }),
         title: t.String({ minLength: 1 }),
       }),

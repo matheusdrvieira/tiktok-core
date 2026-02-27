@@ -129,7 +129,10 @@ export class TiktokService extends TiktokRepository {
       {
         post_info: {
           title: input.title,
-          privacy_level: TiktokPrivacyLevelEnum.SELF_ONLY,
+          privacy_level:
+            env.NODE_ENV === 'development'
+              ? TiktokPrivacyLevelEnum.SELF_ONLY
+              : TiktokPrivacyLevelEnum.PUBLIC_TO_EVERYONE,
           disable_comment: false,
           disable_duet: true,
           disable_stitch: true,

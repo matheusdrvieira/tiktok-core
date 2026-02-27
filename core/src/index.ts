@@ -6,7 +6,7 @@ import { env } from './shared/config/env';
 const app = new Elysia()
   .use(
     cors({
-      origin: env.FRONTEND_URL,
+      origin: [env.FRONTEND_URL, env.REMOTION_URL],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization", "Range"],

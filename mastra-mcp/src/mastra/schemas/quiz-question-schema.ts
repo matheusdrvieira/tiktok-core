@@ -13,17 +13,17 @@ export const quizQuestionSchema = z
       )
       .length(4),
     answer: z.object({
-      correctOptionId: z.string().trim().min(1),
+      correctAnswerIndex: z.number().int().min(0).max(3),
     }),
   })
   .refine(
     (item: {
       options: Array<{ id: string }>;
-      answer: { correctOptionId: string };
-    }) => item.options.some((o) => o.id === item.answer.correctOptionId),
+      answer: { correctAnswerIndex: number };
+    }) => item.answer.correctAnswerIndex >= 0 && item.answer.correctAnswerIndex < item.options.length,
     {
-      message: "correctOptionId must exist in options",
-      path: ["answer", "correctOptionId"],
+      message: "correctAnswerIndex must point to an option index",
+      path: ["answer", "correctAnswerIndex"],
     }
   );
 
@@ -32,6 +32,9 @@ export type QuizQuestion = z.infer<typeof quizQuestionSchema>;
 
 export const quizQuestionsOutputSchema = z.object({
   title: z.string().trim().min(1),
+  hashtags: z.string().trim().min(1),
+  category: z.number().int().positive(),
+  description: z.string().trim().min(1),
   questions: z.array(quizQuestionSchema),
 });
 

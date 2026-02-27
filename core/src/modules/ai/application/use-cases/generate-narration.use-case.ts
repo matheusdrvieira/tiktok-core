@@ -17,9 +17,11 @@ export class GenerateNarrationUseCase {
         const questionsWithPaths: NarratedQuizQuestion[] = [];
 
         for (const [index, question] of input.questions.entries()) {
-            const correctOption = question.options.find(
-                (option) => option.id === question.answer.correctOptionId,
-            );
+            const correctAnswerIndex = question.answer.correctAnswerIndex;
+            const correctOption =
+                Number.isInteger(correctAnswerIndex) && correctAnswerIndex >= 0
+                    ? question.options[correctAnswerIndex]
+                    : undefined;
 
             if (!correctOption) {
                 throw new Error(`Correct option not found for question "${question.id}".`);
@@ -44,6 +46,9 @@ export class GenerateNarrationUseCase {
 
         return {
             title: input.title,
+            hashtags: input.hashtags,
+            category: input.category,
+            description: input.description,
             questions: questionsWithPaths,
         };
     }

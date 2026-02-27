@@ -12,11 +12,11 @@ app.get("/ping", (_req: Request, res: Response) => {
   res.json({ message: "pong" });
 });
 
-app.post("/quiz/video", async (_req: Request, res: Response) => {
+app.post("/quiz/video", async (req: Request, res: Response) => {
   try {
     const workflow = mastra.getWorkflow("quizWorkflow");
     const run = await workflow.createRun();
-    const result = await run.start({ inputData: {} });
+    const result = await run.start({ inputData: req.body });
 
     if (result.status !== "success") {
       const message =

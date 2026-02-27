@@ -4,7 +4,7 @@ import { env } from '../../../../../shared/config/env';
 import { authGuard } from '../../../../../shared/middleware/auth-guard';
 import { makeUploadFileUseCase } from '../../../../bucket/application/factory/make-upload-file-use-case.factory';
 import { makeCreateVideoUseCase } from '../../../application/factory/make-create-video-use-case.factory';
-import { Video } from '../../../domain/entities/videos.entity';
+import { Video, VideoStatus } from '../../../domain/entities/videos.entity';
 import { VideoPresenter } from '../presenters/video.presenter';
 
 const uploadFileUseCase = makeUploadFileUseCase();
@@ -13,7 +13,7 @@ const createVideoUseCase = makeCreateVideoUseCase();
 export const uploadRenderedVideoController = new Elysia()
   .use(authGuard)
   .post(
-    '/tiktok/videos/upload',
+    '/videos/upload',
     async ({ body, user, set }) => {
       const extension = body.file.type === 'video/mp4' ? 'mp4' : 'mp3';
       const key = `videos/${user.id}/${randomUUID()}.${extension}`;
@@ -28,8 +28,13 @@ export const uploadRenderedVideoController = new Elysia()
       const video = await createVideoUseCase.execute(
         Video.create({
           userId: user.id,
-          name: body.name,
+          title: body.title,
+          hashtags: body.hashtags,
+          description: body.description,
+          category: body.category,
           url: videoUrl,
+          status: VideoStatus.RENDERED,
+          quizId: body.quizId,
         }),
       );
 
@@ -42,7 +47,11 @@ export const uploadRenderedVideoController = new Elysia()
     {
       body: t.Object({
         file: t.File(),
-        name: t.String({ minLength: 1 }),
+        title: t.String({ minLength: 1 }),
+        hashtags: t.Array(t.String({ minLength: 1 })),
+        description: t.String({ minLength: 1 }),
+        category: t.String({ minLength: 1 }),
+        quizId: t.String({ minLength: 1 }),
       }),
       auth: true,
     },

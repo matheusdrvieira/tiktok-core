@@ -52,6 +52,8 @@ export const getVideoController = new Elysia().get(
   async ({ query, request, set }) => {
     try {
       const body = await getFileUseCase.execute(query.key);
+
+
       const bytes = new Uint8Array(body);
       const totalBytes = bytes.byteLength;
       const rangeHeader = request.headers.get('range');

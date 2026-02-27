@@ -13,8 +13,9 @@ const generateQuizQuestionsStep = createStep({
   description: 'Gerar título do quiz e perguntas de múltipla escolha',
   inputSchema: quizWorkflowInputSchema,
   outputSchema: generatedQuizSchema,
-  execute: async () => {
-    return await generateQuizQuestions();
+  execute: async ({ inputData }) => {
+    if (!inputData) throw new Error("Quiz input not found.");
+    return await generateQuizQuestions(inputData);
   },
 });
 

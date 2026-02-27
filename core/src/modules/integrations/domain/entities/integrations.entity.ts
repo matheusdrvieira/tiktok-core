@@ -3,7 +3,6 @@ import { Entity } from '../../../../shared/core/domain/entity';
 export enum IntegrationProvider {
     TIKTOK = 'TIKTOK',
     YOUTUBE = 'YOUTUBE',
-    KWAI = 'KWAI',
 }
 
 export type IntegrationProps = {

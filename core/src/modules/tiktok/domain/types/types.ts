@@ -20,6 +20,7 @@ export interface RefreshTokenResponse {
 
 export interface DirectPostRequest {
   userId: string;
+  videoId?: string;
   videoPath: string;
   title: string;
 }

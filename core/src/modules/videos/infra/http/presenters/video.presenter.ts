@@ -5,8 +5,15 @@ export class VideoPresenter {
     return {
       id: video.id,
       userId: video.userId,
-      name: video.name,
+      title: video.title,
+      hashtags: video.hashtags,
+      description: video.description,
+      category: video.category,
       url: video.url,
+      size: video.size,
+      duration: video.duration,
+      status: video.status,
+      quizId: video.quizId,
       createdAt: video.createdAt,
       updatedAt: video.updatedAt,
     };

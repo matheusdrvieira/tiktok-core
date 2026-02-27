@@ -8,12 +8,18 @@ export const generateNarrationController = new Elysia().post(
   async ({ body }) => {
     return await generateNarrationUseCase.execute({
       title: body.title,
+      hashtags: body.hashtags,
+      category: body.category,
+      description: body.description,
       questions: body.questions,
     });
   },
   {
     body: t.Object({
       title: t.String({ minLength: 1 }),
+      hashtags: t.String({ minLength: 1 }),
+      category: t.Number({ minimum: 1 }),
+      description: t.String({ minLength: 1 }),
       questions: t.Array(
         t.Object({
           id: t.String({ minLength: 1 }),
@@ -26,7 +32,7 @@ export const generateNarrationController = new Elysia().post(
             { minItems: 4, maxItems: 4 },
           ),
           answer: t.Object({
-            correctOptionId: t.String({ minLength: 1 }),
+            correctAnswerIndex: t.Number({ minimum: 0, maximum: 3 }),
           }),
         }),
         { minItems: 1 },

@@ -7,6 +7,8 @@ import {
   IntegrationProvider,
 } from '../../../integrations/domain/entities/integrations.entity';
 import { IntegrationsRepository } from '../../../integrations/domain/repositories/integrations.repository';
+import { VideoStatus } from '../../../videos/domain/entities/videos.entity';
+import { VideosRepository } from '../../../videos/domain/repositories/videos.repository';
 import { TiktokRepository } from '../../domain/repositories/tiktok.repository';
 import { DirectPostRequest, DirectPostResponse } from '../../domain/types/types';
 
@@ -47,6 +49,7 @@ export class DirectPostUseCase {
   constructor(
     private readonly tiktokRepository: TiktokRepository,
     private readonly integrationsRepository: IntegrationsRepository,
+    private readonly videosRepository: VideosRepository,
   ) { }
 
   async execute(props: DirectPostRequest): Promise<DirectPostResponse> {
@@ -101,6 +104,14 @@ export class DirectPostUseCase {
           },
         }),
       );
+
+      if (props.videoId) {
+        await this.videosRepository.updateStatus(
+          props.userId,
+          props.videoId,
+          VideoStatus.PUBLISHED,
+        );
+      }
 
       return {
         publishId,
