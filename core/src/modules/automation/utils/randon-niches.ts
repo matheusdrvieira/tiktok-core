@@ -157,6 +157,36 @@ export const quizNiches: QuizNiche[] = [
         ]
     },
     {
+        niche: "Geografia",
+        references: [
+            "capitais do Brasil",
+            "estados e capitais",
+            "países e capitais",
+            "bandeiras de países",
+            "continentes e oceanos",
+            "maiores países do mundo",
+            "mapa-múndi",
+            "relevo brasileiro",
+            "rios mais famosos do mundo",
+            "climas do Brasil"
+        ]
+    },
+    {
+        niche: "Matemática Básica",
+        references: [
+            "tabuada",
+            "adição e subtração",
+            "multiplicação e divisão",
+            "frações",
+            "porcentagem",
+            "regra de três",
+            "expressões numéricas",
+            "números primos",
+            "equações de 1º grau",
+            "problemas de matemática do dia a dia"
+        ]
+    },
+    {
         niche: "Curiosidades",
         references: [
             "curiosidades gerais",
