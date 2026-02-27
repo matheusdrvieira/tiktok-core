@@ -45,6 +45,8 @@ export class AiOpenAiService {
         model: 'gpt-4o-mini-tts',
         voice: 'onyx',
         input: input.text,
+        instructions: `Leia em português do Brasil, com energia e entusiasmo de apresentador de quiz. Mantenha dicção clara, ritmo natural levemente acelerado e entonação animada.`,
+        speed: 1.1,
         response_format: 'mp3',
       });
 

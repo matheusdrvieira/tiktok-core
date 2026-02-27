@@ -9,58 +9,39 @@ export const quizNiches: QuizNiche[] = [
         references: [
             "Naruto",
             "Naruto Shippuden",
-            "Boruto",
             "Dragon Ball",
             "Dragon Ball Z",
             "Dragon Ball Super",
             "One Piece",
-            "Attack on Titan",
             "Death Note",
             "Demon Slayer",
             "Jujutsu Kaisen",
-            "Tokyo Ghoul",
-            "Fullmetal Alchemist",
-            "Fullmetal Alchemist Brotherhood",
-            "Hunter x Hunter",
-            "Bleach",
-            "My Hero Academia",
-            "Chainsaw Man",
-            "Black Clover",
-            "Sword Art Online",
-            "Blue Lock",
-            "Haikyuu",
-            "Spy x Family",
-            "Fairy Tail",
-            "Mob Psycho 100"
+            "Bleach"
         ]
     },
-
     {
         niche: "Filmes",
         references: [
-            "Marvel Cinematic Universe",
+            "Universo Cinematográfico Marvel",
+            "Universo DC",
             "Avengers",
-            "Spider-Man",
+            "Liga da Justiça",
+            "Homem-Aranha",
             "Batman",
             "Superman",
-            "The Dark Knight",
-            "Star Wars",
+            "Mulher-Maravilha",
+            "Coringa",
             "Harry Potter",
-            "The Lord of the Rings",
-            "The Hobbit",
+            "O Senhor dos Anéis",
             "Jurassic Park",
             "Jurassic World",
-            "Transformers",
-            "Pirates of the Caribbean",
-            "Indiana Jones",
+            "Piratas do Caribe",
             "Matrix",
             "Avatar",
-            "Frozen",
             "Toy Story",
             "Shrek"
         ]
     },
-
     {
         niche: "Séries",
         references: [
@@ -71,228 +52,118 @@ export const quizNiches: QuizNiche[] = [
             "Stranger Things",
             "The Walking Dead",
             "The Last of Us",
-            "The Witcher",
             "Peaky Blinders",
             "Friends",
             "The Office",
             "Brooklyn Nine Nine",
             "Dark",
-            "Wednesday",
-            "Euphoria",
-            "Vikings",
-            "Lost",
-            "Prison Break"
+            "Wednesday"
         ]
     },
-
     {
         niche: "Games",
         references: [
             "Minecraft",
             "Fortnite",
             "GTA V",
-            "GTA San Andreas",
-            "Red Dead Redemption 2",
-            "The Witcher 3",
-            "Elden Ring",
-            "Dark Souls",
-            "Bloodborne",
             "God of War",
-            "God of War Ragnarok",
-            "The Legend of Zelda",
-            "Breath of the Wild",
-            "Tears of the Kingdom",
             "Call of Duty",
             "Warzone",
             "Counter Strike",
             "Valorant",
             "League of Legends",
-            "Dota 2",
-            "Overwatch",
             "Roblox",
-            "Among Us"
         ]
     },
-
     {
         niche: "Futebol",
         references: [
-            "Real Madrid",
-            "Barcelona",
-            "Liverpool",
-            "Manchester United",
-            "Manchester City",
-            "Chelsea",
-            "Arsenal",
-            "Bayern Munich",
-            "Paris Saint Germain",
-            "Juventus",
-            "AC Milan",
-            "Inter Milan",
-            "Flamengo",
-            "Palmeiras",
+            "Atlético-MG",
+            "Bahia",
+            "Botafogo",
+            "Red Bull Bragantino",
+            "Ceará",
             "Corinthians",
+            "Cruzeiro",
+            "Flamengo",
+            "Fluminense",
+            "Fortaleza",
+            "Grêmio",
+            "Internacional",
+            "Juventude",
+            "Mirassol",
+            "Palmeiras",
             "Santos",
-            "São Paulo FC",
-            "Seleção Brasileira",
-            "Champions League",
-            "Copa do Mundo"
+            "São Paulo",
+            "Sport",
+            "Vasco da Gama",
+            "Vitória"
         ]
     },
-
     {
         niche: "Jogadores de Futebol",
         references: [
-            "Lionel Messi",
-            "Cristiano Ronaldo",
-            "Neymar",
-            "Kylian Mbappe",
-            "Erling Haaland",
-            "Ronaldinho Gaucho",
-            "Ronaldo Fenomeno",
-            "Zinedine Zidane",
-            "David Beckham",
-            "Pelé",
-            "Maradona",
-            "Luka Modric",
-            "Kevin De Bruyne",
-            "Vinicius Junior",
-            "Jude Bellingham"
+            "craques do futebol mundial",
+            "ídolos do futebol brasileiro",
+            "artilheiros históricos do futebol",
+            "maiores camisas 10",
+            "lendas da Seleção Brasileira",
+            "jogadores decisivos em Copas do Mundo",
+            "jogadores que marcaram época",
+            "jovens promessas do futebol",
+            "melhores atacantes da atualidade",
+            "melhores meio-campistas da atualidade"
         ]
     },
-
     {
-        niche: "Cartoons",
+        niche: "Desenhos",
         references: [
-            "SpongeBob SquarePants",
-            "Rick and Morty",
-            "The Simpsons",
-            "Family Guy",
-            "Adventure Time",
-            "Regular Show",
+            "Bob Esponja",
+            "Os Simpsons",
             "Ben 10",
-            "Teen Titans",
-            "Teen Titans Go",
-            "Gravity Falls",
-            "Steven Universe",
-            "Avatar The Last Airbender",
-            "The Legend of Korra"
         ]
     },
-
-    {
-        niche: "YouTube",
-        references: [
-            "MrBeast",
-            "PewDiePie",
-            "Markiplier",
-            "Dream",
-            "Technoblade",
-            "Ludwig",
-            "IShowSpeed",
-            "Sidemen",
-            "KSI",
-            "Logan Paul"
-        ]
-    },
-
-    {
-        niche: "Tecnologia",
-        references: [
-            "Apple",
-            "iPhone",
-            "Steve Jobs",
-            "Microsoft",
-            "Bill Gates",
-            "Windows",
-            "Google",
-            "Android",
-            "Samsung",
-            "Tesla",
-            "Elon Musk",
-            "SpaceX",
-            "NVIDIA",
-            "Intel"
-        ]
-    },
-
     {
         niche: "História",
         references: [
-            "Ancient Egypt",
-            "Ancient Rome",
-            "Greek Mythology",
-            "World War I",
-            "World War II",
-            "Cold War",
-            "Napoleon Bonaparte",
-            "Roman Empire",
+            "Egito Antigo",
+            "Roma Antiga",
+            "Mitologia Grega",
+            "Primeira Guerra Mundial",
+            "Segunda Guerra Mundial",
+            "Guerra Fria",
+            "Império Romano",
             "Vikings",
-            "Medieval Europe"
+            "Europa Medieval"
         ]
     },
-
     {
         niche: "Mitologia",
         references: [
-            "Greek Mythology",
-            "Norse Mythology",
-            "Egyptian Mythology",
-            "Zeus",
-            "Odin",
-            "Thor",
-            "Loki",
-            "Hades",
-            "Athena",
-            "Poseidon"
+            "Mitologia Grega",
+            "Mitologia Nórdica",
+            "Mitologia Egípcia",
         ]
     },
-
     {
         niche: "Ciência",
         references: [
-            "Albert Einstein",
-            "Isaac Newton",
-            "Nikola Tesla",
-            "Stephen Hawking",
-            "Black Holes",
-            "Solar System",
-            "Planets",
-            "Physics",
-            "Space Exploration",
+            "Buracos Negros",
+            "Sistema Solar",
+            "Planetas",
+            "Física",
+            "Exploração Espacial",
             "NASA"
         ]
     },
-
     {
-        niche: "Carros",
+        niche: "Curiosidades",
         references: [
-            "Ferrari",
-            "Lamborghini",
-            "Bugatti",
-            "Porsche",
-            "BMW",
-            "Audi",
-            "Mercedes Benz",
-            "Tesla",
-            "Nissan GTR",
-            "Supra"
-        ]
-    },
-
-    {
-        niche: "Marcas",
-        references: [
-            "Nike",
-            "Adidas",
-            "Supreme",
-            "Gucci",
-            "Louis Vuitton",
-            "Rolex",
-            "McDonalds",
-            "Coca Cola",
-            "Pepsi",
-            "Starbucks"
+            "curiosidades gerais",
+            "fatos surpreendentes",
+            "mistérios famosos",
+            "recordes mundiais",
+            "perguntas de conhecimento geral"
         ]
     }
 ]
