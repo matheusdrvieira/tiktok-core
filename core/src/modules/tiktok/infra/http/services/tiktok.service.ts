@@ -158,7 +158,10 @@ export class TiktokService extends TiktokRepository {
         uploadUrl: data?.data?.upload_url,
       };
     } catch (err) {
-      console.log('[tiktok][initDirectPost] error:', err);
+      if (axios.isAxiosError(err)) {
+        console.log('[tiktok][initDirectPost][status]', err.response?.status);
+        console.log('[tiktok][initDirectPost][data]', JSON.stringify(err.response?.data));
+      }
       throw new Error((err as Error).message);
     }
   }
@@ -183,7 +186,10 @@ export class TiktokService extends TiktokRepository {
         uploadUrl: input.uploadUrl
       };
     } catch (err) {
-      console.log('[tiktok][uploadDirectPostVideo] error:', err);
+      if (axios.isAxiosError(err)) {
+        console.log('[tiktok][initDirectPost][status]', err.response?.status);
+        console.log('[tiktok][initDirectPost][data]', JSON.stringify(err.response?.data));
+      }
       throw new Error((err as Error).message);
     }
   }
