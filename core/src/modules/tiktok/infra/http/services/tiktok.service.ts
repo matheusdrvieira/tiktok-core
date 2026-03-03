@@ -18,13 +18,6 @@ const api = axios.create({
   baseURL: 'https://open.tiktokapis.com/v2',
 });
 
-enum TiktokPrivacyLevelEnum {
-  PUBLIC_TO_EVERYONE = "PUBLIC_TO_EVERYONE",
-  MUTUAL_FOLLOW_FRIENDS = "MUTUAL_FOLLOW_FRIENDS",
-  FOLLOWER_OF_CREATOR = "FOLLOWER_OF_CREATOR",
-  SELF_ONLY = "SELF_ONLY"
-}
-
 const FILE_UPLOAD_SOURCE = 'FILE_UPLOAD';
 
 export class TiktokService extends TiktokRepository {
@@ -130,13 +123,12 @@ export class TiktokService extends TiktokRepository {
         {
           post_info: {
             title: input.title,
-            privacy_level: TiktokPrivacyLevelEnum.SELF_ONLY,
-            // env.NODE_ENV === 'development'
-            //   ? TiktokPrivacyLevelEnum.SELF_ONLY
-            //   : TiktokPrivacyLevelEnum.PUBLIC_TO_EVERYONE,
-            disable_comment: false,
-            disable_duet: true,
-            disable_stitch: true,
+            privacy_level: input.privacyLevel,
+            disable_comment: input.disableComment,
+            disable_duet: input.disableDuet,
+            disable_stitch: input.disableStitch,
+            brand_content_toggle: input.brandContentToggle,
+            brand_organic_toggle: input.brandOrganicToggle,
           },
           source_info: {
             source: FILE_UPLOAD_SOURCE,

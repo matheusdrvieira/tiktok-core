@@ -93,6 +93,12 @@ export class RunAutomationJobUseCase {
         videoId: video.id,
         videoPath: rendered.url,
         title: publishTitle,
+        privacyLevel: 'SELF_ONLY',
+        disableComment: false,
+        disableDuet: true,
+        disableStitch: true,
+        brandContentToggle: false,
+        brandOrganicToggle: false,
       }),
       this.uploadVideoUseCase.execute({
         userId: env.AUTOMATION_USER_ID,

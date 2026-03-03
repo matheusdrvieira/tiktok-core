@@ -18,11 +18,23 @@ export interface RefreshTokenResponse {
   openId?: string;
 }
 
+export type TiktokPrivacyLevel =
+  | 'PUBLIC_TO_EVERYONE'
+  | 'MUTUAL_FOLLOW_FRIENDS'
+  | 'SELF_ONLY'
+  | 'FOLLOWER_OF_CREATOR';
+
 export interface DirectPostRequest {
   userId: string;
   videoId?: string;
   videoPath: string;
   title: string;
+  privacyLevel: TiktokPrivacyLevel;
+  disableComment: boolean;
+  disableDuet: boolean;
+  disableStitch: boolean;
+  brandContentToggle: boolean;
+  brandOrganicToggle: boolean;
 }
 
 export interface DirectPostResponse {
@@ -34,6 +46,12 @@ export interface DirectPostInitInput {
   accessToken: string;
   title: string;
   videoSize: number;
+  privacyLevel: TiktokPrivacyLevel;
+  disableComment: boolean;
+  disableDuet: boolean;
+  disableStitch: boolean;
+  brandContentToggle: boolean;
+  brandOrganicToggle: boolean;
 }
 
 export interface DirectPostInitOutput {
@@ -55,12 +73,6 @@ export interface DirectPostUploadOutput {
 export interface CreatorInfoQueryInput {
   accessToken: string;
 }
-
-export type TiktokPrivacyLevel =
-  | 'PUBLIC_TO_EVERYONE'
-  | 'MUTUAL_FOLLOW_FRIENDS'
-  | 'SELF_ONLY'
-  | 'FOLLOWER_OF_CREATOR';
 
 export interface CreatorInfoQueryOutput {
   creatorAvatarUrl: string;

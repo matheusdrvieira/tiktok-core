@@ -77,6 +77,12 @@ export class DirectPostUseCase {
         accessToken: refreshedToken.accessToken,
         title: props.title,
         videoSize: fileStat.size,
+        privacyLevel: props.privacyLevel,
+        disableComment: props.disableComment,
+        disableDuet: props.disableDuet,
+        disableStitch: props.disableStitch,
+        brandContentToggle: props.brandContentToggle,
+        brandOrganicToggle: props.brandOrganicToggle,
       });
 
       if (!publishId || !uploadUrl) {
