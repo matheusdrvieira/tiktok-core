@@ -83,4 +83,7 @@ export interface CreatorInfoQueryOutput {
   duetDisabled: boolean;
   stitchDisabled: boolean;
   maxVideoPostDurationSec: number;
+  canPost: boolean;
+  canPostErrorCode: string | null;
+  canPostErrorMessage: string | null;
 }

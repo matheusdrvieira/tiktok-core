@@ -63,6 +63,16 @@ export class DirectPostUseCase {
     const refreshedToken = await this.tiktokRepository.refreshToken({
       refreshToken: integration?.credentials?.refreshToken as string
     });
+    const creatorInfo = await this.tiktokRepository.queryCreatorInfo({
+      accessToken: refreshedToken.accessToken,
+    });
+
+    if (!creatorInfo.canPost) {
+      throw new Error(
+        creatorInfo.canPostErrorMessage ??
+        'Esta conta TikTok não pode publicar no momento. Tente novamente mais tarde.',
+      );
+    }
 
     const videoSource = await resolveVideoPath(props.videoPath);
 
