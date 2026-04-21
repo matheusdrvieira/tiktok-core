@@ -1,31 +1,15 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
+    "target": "ES2021",
+    "module": "ES2022",
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "6.0",
+    "types": [
+      "bun-types"
+    ],
     "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2025",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "paths": {
-      "src/*": [
-        "./src/*"
-      ],
-      "generated/*": [
-        "./generated/*"
-      ]
-    },
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": false,
-    "useUnknownInCatchVariables": false,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "strict": true,
+    "skipLibCheck": true
   }
 }
