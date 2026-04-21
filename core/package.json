@@ -20,7 +20,7 @@
     "@prisma/adapter-libsql": "^7.4.0",
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
-    "@remotion/renderer": "4.0.425",
+    "@remotion/renderer": "4.0.448",
     "@types/node": "^25.2.3",
     "@types/pg": "^8.16.0",
     "axios": "^1.13.5",
@@ -30,7 +30,7 @@
     "ollama": "^0.6.3",
     "openai": "^6.22.0",
     "pg": "^8.18.0",
-    "remotion": "4.0.425",
+    "remotion": "4.0.448",
     "zod": "^4.3.6"
   },
   "devDependencies": {
