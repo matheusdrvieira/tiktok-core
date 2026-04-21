@@ -29,6 +29,7 @@ app.post("/quiz/video", async (req: Request, res: Response) => {
 
     return res.status(200).json(result.result);
   } catch (err) {
+    console.error('[mastra-mcp][quizVideo] error:', err);
     const message =
       err instanceof Error ? err.message : "Falha ao executar quiz workflow.";
 

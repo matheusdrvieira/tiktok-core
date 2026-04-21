@@ -98,6 +98,7 @@ export const generateQuizVideoController = new Elysia()
           questions: questionsWithPublicPaths,
         };
       } catch (err) {
+        console.error('[ai][generateQuizVideo] error:', err);
         set.status = 502;
         return {
           message: `Failed to generate quiz video via MCP: ${getAxiosErrorMessage(err)}`,

@@ -10,6 +10,7 @@ export const generateQuizQuestions = async (
     const response = await api.post('/ai/quiz/generate', input);
     return response.data;
   } catch (err) {
+    console.error('[mastra-mcp][generateQuizQuestions] error:', err);
     throw new Error(`Failed to generate quiz via Core: ${getAxiosErrorMessage(err)}`);
   }
 };

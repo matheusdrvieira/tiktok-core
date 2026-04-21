@@ -102,7 +102,7 @@ export class YoutubeService extends YoutubeRepository {
 
       return { videoId };
     } catch (err) {
-      console.log('[youtube][uploadVideo] error:', err);
+      console.error('[youtube][uploadVideo] error:', err);
       throw new Error((err as Error).message);
     }
   }
@@ -147,7 +147,7 @@ export class YoutubeService extends YoutubeRepository {
 
       return uploadUrl;
     } catch (err) {
-      console.log('[youtube][initResumableUpload] error:', err);
+      console.error('[youtube][initResumableUpload] error:', err);
       throw new Error((err as Error).message);
     }
   }
@@ -177,7 +177,7 @@ export class YoutubeService extends YoutubeRepository {
 
       return videoId;
     } catch (err) {
-      console.log('[youtube][uploadBinary] error:', err);
+      console.error('[youtube][uploadBinary] error:', err);
       throw new Error((err as Error).message);
     }
   }

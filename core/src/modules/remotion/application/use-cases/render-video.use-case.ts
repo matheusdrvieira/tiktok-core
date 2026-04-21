@@ -103,6 +103,7 @@ export class RenderVideoUseCase {
         duration: composition.durationInFrames / composition.fps,
       };
     } catch (error) {
+      console.error('[remotion][renderWithRemotion] error:', error);
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(message);
     }

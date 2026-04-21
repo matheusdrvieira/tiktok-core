@@ -20,6 +20,7 @@ export class AiLocalService {
 
         return this.toQuizOutput(response.message.content);
       } catch (err) {
+        console.error(`[ai-local][generateQuiz] attempt ${attempt} failed:`, err);
         lastError = err;
       }
     }
@@ -54,6 +55,7 @@ export class AiLocalService {
 
       return { audioBuffer: response.data };
     } catch (err) {
+      console.error('[ai-local][generateNarration] error:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
       throw new Error(`Failed to generate narration: ${message}`);
     }

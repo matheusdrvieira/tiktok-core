@@ -29,6 +29,7 @@ export class AiOpenAiService {
         return this.toQuizOutput(response.output_text);
 
       } catch (err) {
+        console.error(`[ai-openai][generateQuiz] attempt ${attempt} failed:`, err);
         lastError = err;
       }
     }
@@ -52,6 +53,7 @@ export class AiOpenAiService {
 
       return { audioBuffer: Buffer.from(await speech.arrayBuffer()) };
     } catch (err) {
+      console.error('[ai-openai][generateNarration] error:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
       throw new Error(`Failed to generate narration: ${message}`);
     }

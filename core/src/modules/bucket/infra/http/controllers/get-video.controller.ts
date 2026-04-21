@@ -96,6 +96,7 @@ export const getVideoController = new Elysia().get(
         },
       });
     } catch (err) {
+      console.error('[bucket][getVideo] error:', err);
       const message = err instanceof Error ? err.message : 'Failed to load video from bucket.';
       const isNotFound = /NoSuchKey|NotFound|not found/i.test(message);
       set.status = isNotFound ? 404 : 500;

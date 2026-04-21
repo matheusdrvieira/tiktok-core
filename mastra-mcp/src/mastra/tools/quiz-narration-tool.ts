@@ -15,6 +15,7 @@ export const generateQuizNarration = async (
 
     return response.data;
   } catch (err) {
+    console.error('[mastra-mcp][generateQuizNarration] error:', err);
     const message = getAxiosErrorMessage(err);
     throw new Error(`Failed to generate quiz narration via Core: ${message}`);
   }

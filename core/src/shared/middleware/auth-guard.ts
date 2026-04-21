@@ -20,6 +20,7 @@ export const authGuard = new Elysia({ name: 'better-auth' })
             session: session.session,
           };
         } catch (err) {
+          console.error('[authGuard] failed to validate session:', err);
           return status(500, { message: 'Falha ao validar sessão.' });
         }
       },
