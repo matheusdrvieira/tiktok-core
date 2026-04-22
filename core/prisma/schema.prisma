@@ -20,6 +20,7 @@ model Users {
   integrations  Integrations[]
   videos        Videos[]
   quizzes       Quizzes[]
+  renderJobs    RenderJobs[]
 
   @@unique([email])
   @@map("users")
@@ -99,11 +100,18 @@ enum VideoStatus {
   PUBLISHED
 }
 
+enum RenderJobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
 model Videos {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   userId      String
   title       String
-  hashtags    String[] @default([])
+  hashtags    String[]    @default([])
   description String
   category    String
   url         String?
@@ -111,16 +119,39 @@ model Videos {
   duration    Float?
   status      VideoStatus @default(DRAFT)
   quizId      String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  users Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quiz  Quizzes @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  users      Users        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz       Quizzes      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  renderJobs RenderJobs[]
 
   @@unique([url])
   @@index([userId])
   @@index([quizId])
   @@map("videos")
+}
+
+model RenderJobs {
+  id          String          @id @default(cuid())
+  userId      String
+  videoId     String
+  templateId  String?
+  status      RenderJobStatus @default(QUEUED)
+  error       String?
+  resultKey   String?
+  resultUrl   String?
+  completedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  users Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Videos @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([videoId])
+  @@index([status])
+  @@map("render_jobs")
 }
 
 model Quizzes {
@@ -129,7 +160,7 @@ model Quizzes {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users     Users           @relation(fields: [userId], references: [id], onDelete: Cascade)
   videos    Videos[]
   questions QuizQuestions[]
 
@@ -138,14 +169,14 @@ model Quizzes {
 }
 
 model QuizQuestions {
-  id              String   @id @default(uuid())
-  quizId          String
-  question        String
+  id                 String   @id @default(uuid())
+  quizId             String
+  question           String
   correctAnswerIndex Int
-  questionPath    String?
-  answerCorrectPath String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  questionPath       String?
+  answerCorrectPath  String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   quiz    Quizzes       @relation(fields: [quizId], references: [id], onDelete: Cascade)
   options QuizOptions[]

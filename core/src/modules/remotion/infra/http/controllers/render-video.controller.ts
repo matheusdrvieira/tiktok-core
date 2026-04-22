@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
 import { authGuard } from "../../../../../shared/middleware/auth-guard";
-import { makeRenderVideoUseCase } from "../../../application/factory/make-render-video-use-case.factory";
-import { VideoPresenter } from "../../../../videos/infra/http/presenters/video.presenter";
+import { makeGetRenderVideoJobUseCase } from "../../../application/factory/make-get-render-video-job-use-case.factory";
+import { makeStartRenderVideoJobUseCase } from "../../../application/factory/make-start-render-video-job-use-case.factory";
 import { remotionTemplateIds } from "../../../domain/constants/remotion-template.constants";
+import { RenderJobPresenter } from "../presenters/render-job.presenter";
 
-const renderVideoUseCase = makeRenderVideoUseCase();
+const startRenderVideoJobUseCase = makeStartRenderVideoJobUseCase();
+const getRenderVideoJobUseCase = makeGetRenderVideoJobUseCase();
 
 const questionOptionSchema = t.Object({
   id: t.String({ minLength: 1 }),
@@ -33,23 +35,18 @@ export const renderVideoController = new Elysia()
   .post(
     "/remotion/render",
     async ({ body, user, set }) => {
-      const rendered = await renderVideoUseCase.execute({
+      const job = await startRenderVideoJobUseCase.execute({
         userId: user.id,
         videoId: body.videoId,
         questions: body.questions,
         templateId: body.templateId,
       });
 
-      set.status = 201;
+      set.status = 202;
 
       return {
-        message: "Vídeo renderizado com sucesso.",
-        video: {
-          ...VideoPresenter.toHttp(rendered.video),
-          path: rendered.url,
-          key: rendered.key,
-        },
-        templateId: rendered.templateId,
+        message: "Renderização iniciada.",
+        job: RenderJobPresenter.toHttp(job),
       };
     },
     {
@@ -57,6 +54,27 @@ export const renderVideoController = new Elysia()
         videoId: t.String({ minLength: 1 }),
         questions: t.Array(questionSchema, { minItems: 4, maxItems: 10 }),
         templateId: t.Optional(templateIdSchema),
+      }),
+      auth: true,
+    },
+  )
+  .get(
+    "/remotion/render/:jobId",
+    async ({ params, user, set }) => {
+      const job = await getRenderVideoJobUseCase.execute(user.id, params.jobId);
+
+      if (!job) {
+        set.status = 404;
+        return { message: "Render job não encontrado." };
+      }
+
+      return {
+        job: RenderJobPresenter.toHttp(job),
+      };
+    },
+    {
+      params: t.Object({
+        jobId: t.String({ minLength: 1 }),
       }),
       auth: true,
     },
