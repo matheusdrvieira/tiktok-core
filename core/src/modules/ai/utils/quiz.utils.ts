@@ -11,6 +11,11 @@ export const buildQuizPrompt = (props: GenerateQuizInput): PromptMessage[] => {
   const categoryOptionsText = quizCategoryOptions
     .map((category) => `${category.id} = ${category.label}`)
     .join('; ');
+  const excludedQuestions = props.excludedQuestions ?? [];
+  const excludedQuestionsText = excludedQuestions
+    .slice(0, 150)
+    .map((question, index) => `${index + 1}. ${question}`)
+    .join('\n');
 
   return [
     {
@@ -46,6 +51,14 @@ export const buildQuizPrompt = (props: GenerateQuizInput): PromptMessage[] => {
         '9) Varie a posição do gabarito: distribua "correctAnswerIndex" ao longo das questões (não repita sempre o mesmo).',
         '10) Não misture outras franquias, personagens, universos ou referências fora de ' + JSON.stringify(props.reference) + '.',
         '11) Não invente fatos. Se não tiver certeza, substitua por um fato comum e verificável.',
+        excludedQuestions.length > 0
+          ? [
+            '',
+            'PERGUNTAS PROIBIDAS:',
+            'Não gere perguntas iguais, equivalentes ou com o mesmo fato central destas perguntas já usadas:',
+            excludedQuestionsText,
+          ].join('\n')
+          : '',
         '',
         'TÍTULO (viral, forte):',
         '12) "title" <= 70 caracteres, MUITO chamativo, estilo vídeo curto.',

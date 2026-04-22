@@ -14,6 +14,7 @@ export const generateQuizController = new Elysia()
         niche: t.String({ minLength: 1 }),
         reference: t.String({ minLength: 1 }),
         questionsCount: t.Number({ minimum: 4, maximum: 10 }),
+        excludedQuestions: t.Optional(t.Array(t.String({ minLength: 1 }))),
       }),
     },
   );

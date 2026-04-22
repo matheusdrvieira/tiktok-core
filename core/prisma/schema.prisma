@@ -8,19 +8,21 @@ datasource db {
 }
 
 model Users {
-  id            String         @id
-  name          String
-  email         String
-  emailVerified Boolean        @default(false)
-  image         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  sessions      Sessions[]
-  accounts      Accounts[]
-  integrations  Integrations[]
-  videos        Videos[]
-  quizzes       Quizzes[]
-  renderJobs    RenderJobs[]
+  id              String                @id
+  name            String
+  email           String
+  emailVerified   Boolean               @default(false)
+  image           String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  sessions        Sessions[]
+  accounts        Accounts[]
+  integrations    Integrations[]
+  videos          Videos[]
+  quizzes         Quizzes[]
+  renderJobs      RenderJobs[]
+  automationRuns  AutomationRuns[]
+  questionHistory QuizQuestionHistory[]
 
   @@unique([email])
   @@map("users")
@@ -107,6 +109,21 @@ enum RenderJobStatus {
   FAILED
 }
 
+enum AutomationRunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum AutomationRunStage {
+  GENERATING_QUIZ
+  GENERATING_NARRATION
+  PERSISTING_QUIZ
+  RENDERING
+  PUBLISHING
+  COMPLETED
+}
+
 model Videos {
   id          String      @id @default(cuid())
   userId      String
@@ -152,6 +169,50 @@ model RenderJobs {
   @@index([videoId])
   @@index([status])
   @@map("render_jobs")
+}
+
+model AutomationRuns {
+  id          String              @id @default(cuid())
+  userId      String
+  niche       String
+  reference   String
+  status      AutomationRunStatus @default(RUNNING)
+  stage       AutomationRunStage  @default(GENERATING_QUIZ)
+  attempt     Int                 @default(1)
+  error       String?
+  quizId      String?
+  videoId     String?
+  completedAt DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("automation_runs")
+}
+
+model QuizQuestionHistory {
+  id                String   @id @default(cuid())
+  userId            String
+  niche             String
+  reference         String
+  referenceKey      String
+  questionText      String
+  questionHash      String
+  correctAnswerText String?
+  quizQuestionId    String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionHash])
+  @@index([userId, referenceKey])
+  @@index([questionHash])
+  @@map("quiz_question_history")
 }
 
 model Quizzes {

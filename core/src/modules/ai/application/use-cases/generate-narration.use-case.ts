@@ -57,7 +57,7 @@ export class GenerateNarrationUseCase {
         id: string;
         text: string;
     }): Promise<string> {
-        const { audioBuffer } = env.NODE_ENV === "production"
+        const { audioBuffer } = env.TTS_PROVIDER === "openai"
             ? await this.aiRepository.generateNarrationOpenAi({ text: input.text })
             : await this.aiRepository.generateNarration({ text: input.text });
 

@@ -23,6 +23,7 @@ const envSchema = z.object({
   YOUTUBE_REDIRECT_URI: z.url(),
   WEB_APP_DIR: z.string().min(1).optional(),
   OPENAI_API_KEY: z.string().min(1),
+  TTS_PROVIDER: z.enum(['kokoro', 'openai']).default('kokoro'),
   TTS_BASE_URL: z.url().default('http://localhost:8880'),
   MINIO_ENDPOINT: z.url().min(1),
   MINIO_BUCKET_NAME: z.string().min(1),

@@ -2,6 +2,7 @@ export type GenerateQuizInput = {
   niche: string;
   reference: string;
   questionsCount: number;
+  excludedQuestions?: string[];
 };
 
 export type QuizOption = {
