@@ -53,7 +53,38 @@ const parseRangeHeader = (rangeHeader: string, totalBytes: number): {
     };
 };
 
-export const getFileController = new Elysia().get(
+const audioQuerySchema = {
+    query: t.Object({
+        key: t.String({ minLength: 1 }),
+    }),
+};
+
+export const getFileController = new Elysia().head(
+    '/bucket/audio',
+    async ({ query, set }) => {
+        try {
+            const body = await getFileUseCase.execute(query.key);
+            const bytes = new Uint8Array(body);
+
+            return new Response(null, {
+                status: 200,
+                headers: {
+                    'content-type': 'audio/mpeg',
+                    'content-length': String(bytes.byteLength),
+                    'accept-ranges': 'bytes',
+                    'cache-control': 'no-store',
+                },
+            });
+        } catch (err) {
+            console.error('[bucket][headFile] error:', err);
+            const message = err instanceof Error ? err.message : 'Failed to load audio metadata from bucket.';
+            const isNotFound = /NoSuchKey|NotFound|not found/i.test(message);
+            set.status = isNotFound ? 404 : 500;
+            return;
+        }
+    },
+    audioQuerySchema,
+).get(
     '/bucket/audio',
     async ({ query, request, set }) => {
         try {
@@ -107,9 +138,5 @@ export const getFileController = new Elysia().get(
             return { message };
         }
     },
-    {
-        query: t.Object({
-            key: t.String({ minLength: 1 }),
-        }),
-    },
+    audioQuerySchema,
 );

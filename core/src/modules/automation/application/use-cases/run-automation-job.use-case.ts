@@ -54,6 +54,25 @@ const sleep = async (ms: number): Promise<void> => {
   await new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+const toPublicAudioUrl = (path: string): string => {
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  return `${env.BACKEND_URL}/bucket/audio?key=${encodeURIComponent(path)}`;
+};
+
+const withPublicAudioUrls = (
+  data: GenerateQuizNarrationOutput,
+): GenerateQuizNarrationOutput => ({
+  ...data,
+  questions: data.questions.map((question) => ({
+    ...question,
+    questionPath: toPublicAudioUrl(question.questionPath),
+    answerCorrectPath: toPublicAudioUrl(question.answerCorrectPath),
+  })),
+});
+
 export class RunAutomationJobUseCase {
   constructor(
     private readonly createQuizUseCase: CreateQuizUseCase,
@@ -98,13 +117,17 @@ export class RunAutomationJobUseCase {
         'generate narration',
         () => this.generateNarrationUseCase.execute(generatedQuiz),
       );
+      const narratedQuizWithPublicPaths = withPublicAudioUrls(narratedQuiz);
 
       await this.automationService.markStage(
         run.id,
         AutomationRunStage.PERSISTING_QUIZ,
       );
 
-      const { quizId, video } = await this.persistQuizDraft(userId, narratedQuiz);
+      const { quizId, video } = await this.persistQuizDraft(
+        userId,
+        narratedQuizWithPublicPaths,
+      );
 
       if (!video.id) {
         throw new Error('Video created without id.');
@@ -119,7 +142,7 @@ export class RunAutomationJobUseCase {
         userId,
         niche,
         reference,
-        questions: narratedQuiz.questions,
+        questions: narratedQuizWithPublicPaths.questions,
       });
 
       await this.automationService.markStage(run.id, AutomationRunStage.RENDERING);
@@ -129,7 +152,7 @@ export class RunAutomationJobUseCase {
         () => this.renderVideoUseCase.execute({
           userId,
           videoId: video.id!,
-          questions: narratedQuiz.questions,
+          questions: narratedQuizWithPublicPaths.questions,
         }),
         2,
       );

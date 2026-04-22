@@ -7,5 +7,11 @@ const automationRunnerService = makeAutomationRunnerService();
 export const automationCron = cron({
   name: 'automation-pipeline',
   pattern: FIXED_AUTOMATION_CRON_PATTERN,
-  run: async () => await automationRunnerService.run()
+  run: async () => {
+    try {
+      await automationRunnerService.run();
+    } catch (error) {
+      console.error('[automation][cron] run failed:', error);
+    }
+  },
 });
