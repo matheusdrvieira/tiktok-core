@@ -1,6 +1,7 @@
 import { RenderJobsRepository } from '../../domain/repositories/render-jobs.repository';
 import { RenderVideoRequest } from '../../domain/types/types';
 import { RenderVideoUseCase } from './render-video.use-case';
+import { logAndReportError } from '../../../../shared/lib/discord-error';
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
@@ -29,12 +30,15 @@ export class RunRenderVideoJobUseCase {
       });
     } catch (error) {
       const message = getErrorMessage(error);
-      console.error('[remotion][runRenderVideoJob] error:', error);
+      logAndReportError('[remotion][runRenderVideoJob] error:', error);
 
       try {
         await this.renderJobsRepository.markFailed(jobId, message);
       } catch (markFailedError) {
-        console.error('[remotion][runRenderVideoJob][markFailed] error:', markFailedError);
+        logAndReportError(
+          '[remotion][runRenderVideoJob][markFailed] error:',
+          markFailedError,
+        );
       }
     }
   }

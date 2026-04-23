@@ -1,5 +1,6 @@
 import { Elysia } from 'elysia';
 import { auth } from '../lib/better-auth';
+import { logAndReportError } from '../lib/discord-error';
 
 export const authGuard = new Elysia({ name: 'better-auth' })
   .mount(auth.handler)
@@ -20,7 +21,7 @@ export const authGuard = new Elysia({ name: 'better-auth' })
             session: session.session,
           };
         } catch (err) {
-          console.error('[authGuard] failed to validate session:', err);
+          logAndReportError('[authGuard] failed to validate session:', err);
           return status(500, { message: 'Falha ao validar sessão.' });
         }
       },

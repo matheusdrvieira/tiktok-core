@@ -1,4 +1,5 @@
 import { env } from '../../../../shared/config/env';
+import { logAndReportError } from '../../../../shared/lib/discord-error';
 import { GenerateNarrationUseCase } from '../../../ai/application/use-cases/generate-narration.use-case';
 import { GenerateQuizUseCase } from '../../../ai/application/use-cases/generate-quiz.use-case';
 import {
@@ -168,7 +169,7 @@ export class RunAutomationJobUseCase {
       await this.automationService.markSucceeded(run.id);
     } catch (error) {
       const message = getErrorMessage(error);
-      console.error('[automation][run] error:', error);
+      logAndReportError('[automation][run] error:', error);
       await this.automationService.markFailed(run.id, message);
       throw error;
     }

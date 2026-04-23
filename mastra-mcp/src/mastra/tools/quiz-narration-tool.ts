@@ -1,5 +1,6 @@
 import { createTool } from '@mastra/core/tools';
 import { api, getAxiosErrorMessage } from '../../shared/lib/core-api';
+import { logAndReportError } from '../../shared/lib/discord-error';
 import {
   type GeneratedQuiz,
   generatedQuizSchema,
@@ -15,7 +16,7 @@ export const generateQuizNarration = async (
 
     return response.data;
   } catch (err) {
-    console.error('[mastra-mcp][generateQuizNarration] error:', err);
+    logAndReportError('[mastra-mcp][generateQuizNarration] error:', err);
     const message = getAxiosErrorMessage(err);
     throw new Error(`Failed to generate quiz narration via Core: ${message}`);
   }

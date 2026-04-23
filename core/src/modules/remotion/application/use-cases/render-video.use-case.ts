@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { env } from "../../../../shared/config/env";
+import { logAndReportError } from "../../../../shared/lib/discord-error";
 import { UploadFileUseCase } from "../../../bucket/application/use-cases/upload-file.use-case";
 import { UpdateVideoUrlUseCase } from "../../../videos/application/use-cases/update-video-url.use-case";
 import { VideoStatus } from "../../../videos/domain/entities/videos.entity";
@@ -103,7 +104,7 @@ export class RenderVideoUseCase {
         duration: composition.durationInFrames / composition.fps,
       };
     } catch (error) {
-      console.error('[remotion][renderWithRemotion] error:', error);
+      logAndReportError('[remotion][renderWithRemotion] error:', error);
       const message = error instanceof Error ? error.message : String(error);
       throw new Error(message);
     }

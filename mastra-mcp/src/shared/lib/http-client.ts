@@ -1,5 +1,4 @@
 import axios, { type CreateAxiosDefaults } from 'axios';
-import { env } from '../config/env';
 
 const stringifyData = (data: unknown): string => {
   if (typeof data === 'string') {
@@ -15,21 +14,6 @@ const stringifyData = (data: unknown): string => {
 
 export const createHttpClient = (config: CreateAxiosDefaults = {}) =>
   axios.create(config);
-
-export const mcpApi = createHttpClient({
-  baseURL: env.MCP_URL,
-  timeout: 180_000,
-});
-
-export const ttsApi = createHttpClient({
-  baseURL: env.TTS_BASE_URL,
-  timeout: 180_000,
-  headers: {
-    "Content-Type": "application/json",
-    "x-raw-response": "true",
-  },
-  responseType: "arraybuffer",
-});
 
 export const getAxiosErrorMessage = (err: unknown): string => {
   if (axios.isAxiosError(err)) {

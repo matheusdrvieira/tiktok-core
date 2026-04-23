@@ -1,4 +1,5 @@
 import { Elysia, t } from 'elysia';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
 import { makeGetFileUseCase } from '../../../application/factory/make-get-file-use-case.factory';
 
 const getFileUseCase = makeGetFileUseCase();
@@ -76,9 +77,11 @@ export const getFileController = new Elysia().head(
                 },
             });
         } catch (err) {
-            console.error('[bucket][headFile] error:', err);
             const message = err instanceof Error ? err.message : 'Failed to load audio metadata from bucket.';
             const isNotFound = /NoSuchKey|NotFound|not found/i.test(message);
+            if (!isNotFound) {
+                logAndReportError('[bucket][headFile] error:', err);
+            }
             set.status = isNotFound ? 404 : 500;
             return;
         }
@@ -131,9 +134,11 @@ export const getFileController = new Elysia().head(
                 },
             });
         } catch (err) {
-            console.error('[bucket][getFile] error:', err);
             const message = err instanceof Error ? err.message : 'Failed to load audio from bucket.';
             const isNotFound = /NoSuchKey|NotFound|not found/i.test(message);
+            if (!isNotFound) {
+                logAndReportError('[bucket][getFile] error:', err);
+            }
             set.status = isNotFound ? 404 : 500;
             return { message };
         }

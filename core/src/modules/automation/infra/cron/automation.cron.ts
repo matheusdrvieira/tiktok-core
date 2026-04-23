@@ -1,7 +1,8 @@
 import { cron } from '@elysiajs/cron';
+import { logAndReportError } from '../../../../shared/lib/discord-error';
 import { makeAutomationRunnerService } from '../../application/factory/make-automation-runner-service.factory';
 
-const FIXED_AUTOMATION_CRON_PATTERN = '0 0,6,12,14,18,21 * * *';
+const FIXED_AUTOMATION_CRON_PATTERN = '0 0,6,12,15,18,21 * * *';
 const automationRunnerService = makeAutomationRunnerService();
 
 export const automationCron = cron({
@@ -11,7 +12,7 @@ export const automationCron = cron({
     try {
       await automationRunnerService.run();
     } catch (error) {
-      console.error('[automation][cron] run failed:', error);
+      logAndReportError('[automation][cron] run failed:', error);
     }
   },
 });

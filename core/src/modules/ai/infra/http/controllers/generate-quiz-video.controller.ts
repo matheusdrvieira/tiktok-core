@@ -1,5 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { env } from '../../../../../shared/config/env';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
 import { authGuard } from '../../../../../shared/middleware/auth-guard';
 import { getAxiosErrorMessage, mcpApi } from '../../../../../shared/lib/http-client';
 import { makeCreateQuizUseCase } from '../../../../quizzes/application/factory/make-create-quiz-use-case.factory';
@@ -98,7 +99,7 @@ export const generateQuizVideoController = new Elysia()
           questions: questionsWithPublicPaths,
         };
       } catch (err) {
-        console.error('[ai][generateQuizVideo] error:', err);
+        logAndReportError('[ai][generateQuizVideo] error:', err);
         set.status = 502;
         return {
           message: `Failed to generate quiz video via MCP: ${getAxiosErrorMessage(err)}`,

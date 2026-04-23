@@ -1,4 +1,5 @@
 import { Elysia, t } from 'elysia';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
 import { makeGetFileUseCase } from '../../../application/factory/make-get-file-use-case.factory';
 
 const getFileUseCase = makeGetFileUseCase();
@@ -96,9 +97,11 @@ export const getVideoController = new Elysia().get(
         },
       });
     } catch (err) {
-      console.error('[bucket][getVideo] error:', err);
       const message = err instanceof Error ? err.message : 'Failed to load video from bucket.';
       const isNotFound = /NoSuchKey|NotFound|not found/i.test(message);
+      if (!isNotFound) {
+        logAndReportError('[bucket][getVideo] error:', err);
+      }
       set.status = isNotFound ? 404 : 500;
       return { message };
     }

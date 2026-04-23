@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { createReadStream } from 'node:fs';
 import { env } from '../../../../../shared/config/env';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
+import { createHttpClient } from '../../../../../shared/lib/http-client';
 import { TiktokRepository } from '../../../domain/repositories/tiktok.repository';
 import {
   CreatorInfoQueryInput,
@@ -15,7 +17,7 @@ import {
   TokenResponse
 } from '../../../domain/types/types';
 
-const api = axios.create({
+const api = createHttpClient({
   baseURL: 'https://open.tiktokapis.com/v2',
 });
 
@@ -226,7 +228,7 @@ export class TiktokService extends TiktokRepository {
         uploadUrl: data?.data?.upload_url,
       };
     } catch (err) {
-      console.error('[tiktok][initDirectPost] error:', err);
+      logAndReportError('[tiktok][initDirectPost] error:', err);
       if (axios.isAxiosError(err)) {
         console.error('[tiktok][initDirectPost][status]', err.response?.status);
         console.error('[tiktok][initDirectPost][data]', JSON.stringify(err.response?.data));
@@ -255,7 +257,7 @@ export class TiktokService extends TiktokRepository {
         uploadUrl: input.uploadUrl
       };
     } catch (err) {
-      console.error('[tiktok][uploadDirectPostVideo] error:', err);
+      logAndReportError('[tiktok][uploadDirectPostVideo] error:', err);
       if (axios.isAxiosError(err)) {
         console.error('[tiktok][uploadDirectPostVideo][status]', err.response?.status);
         console.error('[tiktok][uploadDirectPostVideo][data]', JSON.stringify(err.response?.data));

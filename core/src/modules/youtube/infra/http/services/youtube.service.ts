@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { createReadStream } from 'node:fs';
 import { env } from '../../../../../shared/config/env';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
+import { createHttpClient } from '../../../../../shared/lib/http-client';
 import { YoutubeRepository } from '../../../domain/repositories/youtube.repository';
 import {
   RefreshTokenRequest,
@@ -10,11 +12,11 @@ import {
   UploadVideoOutput,
 } from '../../../domain/types/types';
 
-const googleOauthApi = axios.create({
+const googleOauthApi = createHttpClient({
   baseURL: 'https://oauth2.googleapis.com',
 });
 
-const youtubeApi = axios.create({
+const youtubeApi = createHttpClient({
   baseURL: 'https://www.googleapis.com',
 });
 
@@ -102,7 +104,7 @@ export class YoutubeService extends YoutubeRepository {
 
       return { videoId };
     } catch (err) {
-      console.error('[youtube][uploadVideo] error:', err);
+      logAndReportError('[youtube][uploadVideo] error:', err);
       throw new Error((err as Error).message);
     }
   }
@@ -147,7 +149,7 @@ export class YoutubeService extends YoutubeRepository {
 
       return uploadUrl;
     } catch (err) {
-      console.error('[youtube][initResumableUpload] error:', err);
+      logAndReportError('[youtube][initResumableUpload] error:', err);
       throw new Error((err as Error).message);
     }
   }
@@ -177,7 +179,7 @@ export class YoutubeService extends YoutubeRepository {
 
       return videoId;
     } catch (err) {
-      console.error('[youtube][uploadBinary] error:', err);
+      logAndReportError('[youtube][uploadBinary] error:', err);
       throw new Error((err as Error).message);
     }
   }

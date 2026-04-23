@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { env } from '../../../../../shared/config/env';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
 import { GenerateNarrationInput, GenerateNarrationOutput, GenerateQuizInput, GenerateQuizOutput } from '../../../domain/types/types';
 import { quizResponseSchema } from '../../../schemas/quiz.schemas';
 import { buildQuizPrompt, mapQuestionsToDomain } from '../../../utils/quiz.utils';
@@ -29,7 +30,11 @@ export class AiOpenAiService {
         return this.toQuizOutput(response.output_text);
 
       } catch (err) {
-        console.error(`[ai-openai][generateQuiz] attempt ${attempt} failed:`, err);
+        if (attempt === maxAttempts) {
+          logAndReportError(`[ai-openai][generateQuiz] attempt ${attempt} failed:`, err);
+        } else {
+          console.error(`[ai-openai][generateQuiz] attempt ${attempt} failed:`, err);
+        }
         lastError = err;
       }
     }
@@ -53,7 +58,7 @@ export class AiOpenAiService {
 
       return { audioBuffer: Buffer.from(await speech.arrayBuffer()) };
     } catch (err) {
-      console.error('[ai-openai][generateNarration] error:', err);
+      logAndReportError('[ai-openai][generateNarration] error:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
       throw new Error(`Failed to generate narration: ${message}`);
     }

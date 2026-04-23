@@ -1,4 +1,5 @@
 import ollama from 'ollama';
+import { logAndReportError } from '../../../../../shared/lib/discord-error';
 import { ttsApi } from '../../../../../shared/lib/http-client';
 import { GenerateNarrationInput, GenerateNarrationOutput, GenerateQuizInput, GenerateQuizOutput } from '../../../domain/types/types';
 import { quizResponseSchema } from '../../../schemas/quiz.schemas';
@@ -20,7 +21,11 @@ export class AiLocalService {
 
         return this.toQuizOutput(response.message.content);
       } catch (err) {
-        console.error(`[ai-local][generateQuiz] attempt ${attempt} failed:`, err);
+        if (attempt === maxAttempts) {
+          logAndReportError(`[ai-local][generateQuiz] attempt ${attempt} failed:`, err);
+        } else {
+          console.error(`[ai-local][generateQuiz] attempt ${attempt} failed:`, err);
+        }
         lastError = err;
       }
     }
@@ -55,7 +60,7 @@ export class AiLocalService {
 
       return { audioBuffer: response.data };
     } catch (err) {
-      console.error('[ai-local][generateNarration] error:', err);
+      logAndReportError('[ai-local][generateNarration] error:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
       throw new Error(`Failed to generate narration: ${message}`);
     }
