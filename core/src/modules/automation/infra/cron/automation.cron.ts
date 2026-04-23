@@ -1,7 +1,7 @@
 import { cron } from '@elysiajs/cron';
 import { makeAutomationRunnerService } from '../../application/factory/make-automation-runner-service.factory';
 
-const FIXED_AUTOMATION_CRON_PATTERN = '0 0,6,12,18,21 * * *';
+const FIXED_AUTOMATION_CRON_PATTERN = '0 0,6,12,14,18,21 * * *';
 const automationRunnerService = makeAutomationRunnerService();
 
 export const automationCron = cron({
