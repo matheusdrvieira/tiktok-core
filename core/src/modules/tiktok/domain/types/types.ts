@@ -70,6 +70,20 @@ export interface DirectPostUploadOutput {
   uploadUrl: string;
 }
 
+export interface PublishStatusFetchInput {
+  accessToken: string;
+  publishId: string;
+}
+
+export interface PublishStatusFetchOutput {
+  publishId: string;
+  status: string;
+  failReason: string | null;
+  publiclyAvailablePostIds: string[];
+  uploadedBytes: number | null;
+  downloadedBytes: number | null;
+}
+
 export interface CreatorInfoQueryInput {
   accessToken: string;
 }

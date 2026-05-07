@@ -11,10 +11,12 @@ import {
   DirectPostInitOutput,
   DirectPostUploadInput,
   DirectPostUploadOutput,
+  PublishStatusFetchInput,
+  PublishStatusFetchOutput,
   RefreshTokenRequest,
   RefreshTokenResponse,
   TiktokPrivacyLevel,
-  TokenResponse
+  TokenResponse,
 } from '../../../domain/types/types';
 
 const api = createHttpClient({
@@ -53,6 +55,22 @@ const toBooleanValue = (value: unknown): boolean => value === true;
 const toFiniteNumber = (value: unknown): number =>
   typeof value === 'number' && Number.isFinite(value) ? value : 0;
 
+const toNullableFiniteNumber = (value: unknown): number | null =>
+  typeof value === 'number' && Number.isFinite(value) ? value : null;
+
+const toStringArray = (value: unknown): string[] => {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter(
+      (item): item is string | number =>
+        typeof item === 'string' || typeof item === 'number',
+    )
+    .map(String);
+};
+
 const parsePrivacyLevelOptions = (value: unknown): TiktokPrivacyLevel[] => {
   if (!Array.isArray(value)) {
     return [];
@@ -60,7 +78,8 @@ const parsePrivacyLevelOptions = (value: unknown): TiktokPrivacyLevel[] => {
 
   return value.filter(
     (item): item is TiktokPrivacyLevel =>
-      typeof item === 'string' && TIKTOK_PRIVACY_LEVELS.includes(item as TiktokPrivacyLevel),
+      typeof item === 'string' &&
+      TIKTOK_PRIVACY_LEVELS.includes(item as TiktokPrivacyLevel),
   );
 };
 
@@ -164,7 +183,8 @@ export class TiktokService extends TiktokRepository {
     const creatorInfo = isRecord(payload.data) ? payload.data : {};
     const errorCodeValue = errorPayload.code;
     const errorMessageValue = errorPayload.message;
-    const errorCode = typeof errorCodeValue === 'string' ? errorCodeValue : null;
+    const errorCode =
+      typeof errorCodeValue === 'string' ? errorCodeValue : null;
     const apiErrorMessage =
       typeof errorMessageValue === 'string' ? errorMessageValue : null;
     const canPost = !errorCode || errorCode === 'ok';
@@ -174,18 +194,24 @@ export class TiktokService extends TiktokRepository {
 
     if (!canPost && !isExpectedPostRestrictionError) {
       const errorMessage = apiErrorMessage ? `: ${apiErrorMessage}` : '.';
-      throw new Error(`TikTok creator_info query failed (${errorCode ?? 'unknown'})${errorMessage}`);
+      throw new Error(
+        `TikTok creator_info query failed (${errorCode ?? 'unknown'})${errorMessage}`,
+      );
     }
 
     return {
       creatorAvatarUrl: toStringValue(creatorInfo.creator_avatar_url),
       creatorUsername: toStringValue(creatorInfo.creator_username),
       creatorNickname: toStringValue(creatorInfo.creator_nickname),
-      privacyLevelOptions: parsePrivacyLevelOptions(creatorInfo.privacy_level_options),
+      privacyLevelOptions: parsePrivacyLevelOptions(
+        creatorInfo.privacy_level_options,
+      ),
       commentDisabled: toBooleanValue(creatorInfo.comment_disabled),
       duetDisabled: toBooleanValue(creatorInfo.duet_disabled),
       stitchDisabled: toBooleanValue(creatorInfo.stitch_disabled),
-      maxVideoPostDurationSec: toFiniteNumber(creatorInfo.max_video_post_duration_sec),
+      maxVideoPostDurationSec: toFiniteNumber(
+        creatorInfo.max_video_post_duration_sec,
+      ),
       canPost,
       canPostErrorCode: canPost ? null : errorCode,
       canPostErrorMessage: getCanPostErrorMessage(errorCode, apiErrorMessage),
@@ -231,7 +257,10 @@ export class TiktokService extends TiktokRepository {
       logAndReportError('[tiktok][initDirectPost] error:', err);
       if (axios.isAxiosError(err)) {
         console.error('[tiktok][initDirectPost][status]', err.response?.status);
-        console.error('[tiktok][initDirectPost][data]', JSON.stringify(err.response?.data));
+        console.error(
+          '[tiktok][initDirectPost][data]',
+          JSON.stringify(err.response?.data),
+        );
       }
       throw new Error((err as Error).message);
     }
@@ -254,15 +283,61 @@ export class TiktokService extends TiktokRepository {
 
       return {
         publishId: '',
-        uploadUrl: input.uploadUrl
+        uploadUrl: input.uploadUrl,
       };
     } catch (err) {
       logAndReportError('[tiktok][uploadDirectPostVideo] error:', err);
       if (axios.isAxiosError(err)) {
-        console.error('[tiktok][uploadDirectPostVideo][status]', err.response?.status);
-        console.error('[tiktok][uploadDirectPostVideo][data]', JSON.stringify(err.response?.data));
+        console.error(
+          '[tiktok][uploadDirectPostVideo][status]',
+          err.response?.status,
+        );
+        console.error(
+          '[tiktok][uploadDirectPostVideo][data]',
+          JSON.stringify(err.response?.data),
+        );
       }
       throw new Error((err as Error).message);
     }
+  }
+
+  async fetchPublishStatus(
+    input: PublishStatusFetchInput,
+  ): Promise<PublishStatusFetchOutput> {
+    const { data } = await api.post(
+      '/post/publish/status/fetch/',
+      {
+        publish_id: input.publishId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${input.accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    const payload = isRecord(data) ? data : {};
+    const errorPayload = isRecord(payload.error) ? payload.error : {};
+    const statusPayload = isRecord(payload.data) ? payload.data : {};
+    const errorCode = toStringValue(errorPayload.code);
+
+    if (errorCode && errorCode !== 'ok') {
+      const errorMessage = toStringValue(errorPayload.message);
+      throw new Error(
+        errorMessage || `TikTok publish status fetch failed (${errorCode}).`,
+      );
+    }
+
+    return {
+      publishId: input.publishId,
+      status: toStringValue(statusPayload.status),
+      failReason: toStringValue(statusPayload.fail_reason) || null,
+      publiclyAvailablePostIds: toStringArray(
+        statusPayload.publicaly_available_post_id,
+      ),
+      uploadedBytes: toNullableFiniteNumber(statusPayload.uploaded_bytes),
+      downloadedBytes: toNullableFiniteNumber(statusPayload.downloaded_bytes),
+    };
   }
 }

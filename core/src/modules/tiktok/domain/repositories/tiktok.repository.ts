@@ -5,6 +5,8 @@ import {
   DirectPostInitOutput,
   DirectPostUploadInput,
   DirectPostUploadOutput,
+  PublishStatusFetchInput,
+  PublishStatusFetchOutput,
   RefreshTokenRequest,
   RefreshTokenResponse,
   TokenResponse,
@@ -25,4 +27,7 @@ export abstract class TiktokRepository {
   abstract uploadDirectPostVideo(
     input: DirectPostUploadInput,
   ): Promise<DirectPostUploadOutput>;
+  abstract fetchPublishStatus(
+    input: PublishStatusFetchInput,
+  ): Promise<PublishStatusFetchOutput>;
 }

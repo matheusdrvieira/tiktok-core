@@ -10,7 +10,10 @@ import { IntegrationsRepository } from '../../../integrations/domain/repositorie
 import { VideoStatus } from '../../../videos/domain/entities/videos.entity';
 import { VideosRepository } from '../../../videos/domain/repositories/videos.repository';
 import { TiktokRepository } from '../../domain/repositories/tiktok.repository';
-import { DirectPostRequest, DirectPostResponse } from '../../domain/types/types';
+import {
+  DirectPostRequest,
+  DirectPostResponse,
+} from '../../domain/types/types';
 
 const isHttpUrl = (value: string): boolean => /^https?:\/\//i.test(value);
 
@@ -50,7 +53,7 @@ export class DirectPostUseCase {
     private readonly tiktokRepository: TiktokRepository,
     private readonly integrationsRepository: IntegrationsRepository,
     private readonly videosRepository: VideosRepository,
-  ) { }
+  ) {}
 
   async execute(props: DirectPostRequest): Promise<DirectPostResponse> {
     const integration = await this.integrationsRepository.findByUserId(
@@ -61,7 +64,7 @@ export class DirectPostUseCase {
     if (!integration) throw new Error('TikTok integration not found for user.');
 
     const refreshedToken = await this.tiktokRepository.refreshToken({
-      refreshToken: integration?.credentials?.refreshToken as string
+      refreshToken: integration?.credentials?.refreshToken as string,
     });
     const creatorInfo = await this.tiktokRepository.queryCreatorInfo({
       accessToken: refreshedToken.accessToken,
@@ -70,9 +73,35 @@ export class DirectPostUseCase {
     if (!creatorInfo.canPost) {
       throw new Error(
         creatorInfo.canPostErrorMessage ??
-        'Esta conta TikTok não pode publicar no momento. Tente novamente mais tarde.',
+          'Esta conta TikTok não pode publicar no momento. Tente novamente mais tarde.',
       );
     }
+
+    if (!creatorInfo.privacyLevelOptions.includes(props.privacyLevel)) {
+      throw new Error(
+        'Esta opção de privacidade não está disponível para a conta TikTok conectada.',
+      );
+    }
+
+    const canUseBrandedContentVisibility =
+      props.privacyLevel === 'PUBLIC_TO_EVERYONE' ||
+      props.privacyLevel === 'MUTUAL_FOLLOW_FRIENDS';
+
+    if (props.brandContentToggle && !canUseBrandedContentVisibility) {
+      throw new Error(
+        'Conteúdo de marca só pode ser publicado com visibilidade Público ou Amigos.',
+      );
+    }
+
+    const isPrivateVisibility = props.privacyLevel === 'SELF_ONLY';
+    const disableComment =
+      creatorInfo.commentDisabled ||
+      isPrivateVisibility ||
+      props.disableComment;
+    const disableDuet =
+      creatorInfo.duetDisabled || isPrivateVisibility || props.disableDuet;
+    const disableStitch =
+      creatorInfo.stitchDisabled || isPrivateVisibility || props.disableStitch;
 
     const videoSource = await resolveVideoPath(props.videoPath);
 
@@ -83,20 +112,21 @@ export class DirectPostUseCase {
         throw new Error('Video file is empty');
       }
 
-      const { publishId, uploadUrl } = await this.tiktokRepository.initDirectPost({
-        accessToken: refreshedToken.accessToken,
-        title: props.title,
-        videoSize: fileStat.size,
-        privacyLevel: props.privacyLevel,
-        disableComment: props.disableComment,
-        disableDuet: props.disableDuet,
-        disableStitch: props.disableStitch,
-        brandContentToggle: props.brandContentToggle,
-        brandOrganicToggle: props.brandOrganicToggle,
-      });
+      const { publishId, uploadUrl } =
+        await this.tiktokRepository.initDirectPost({
+          accessToken: refreshedToken.accessToken,
+          title: props.title,
+          videoSize: fileStat.size,
+          privacyLevel: props.privacyLevel,
+          disableComment,
+          disableDuet,
+          disableStitch,
+          brandContentToggle: props.brandContentToggle,
+          brandOrganicToggle: props.brandOrganicToggle,
+        });
 
       if (!publishId || !uploadUrl) {
-        throw new Error("TikTok init missing publish_id/upload_url",);
+        throw new Error('TikTok init missing publish_id/upload_url');
       }
 
       await this.tiktokRepository.uploadDirectPostVideo({
@@ -116,7 +146,7 @@ export class DirectPostUseCase {
             refreshToken: refreshedToken.refreshToken,
             expiresIn: refreshedToken.expiresIn,
             refreshExpiresIn: refreshedToken.refreshExpiresIn,
-            openId: refreshedToken.openId
+            openId: refreshedToken.openId,
           },
         }),
       );
