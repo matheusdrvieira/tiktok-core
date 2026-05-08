@@ -28,7 +28,6 @@ type PersistedQuizDraft = {
 };
 
 const QUIZ_QUESTIONS_COUNT = 5;
-const UNIQUE_GENERATION_ATTEMPTS = 5;
 const DEFAULT_STEP_ATTEMPTS = 3;
 
 const toHashtagsArray = (hashtags: string): string[] =>
@@ -183,7 +182,7 @@ export class RunAutomationJobUseCase {
   }): Promise<GenerateQuizOutput> {
     const extraExcludedQuestions = new Set<string>();
 
-    for (let attempt = 1; attempt <= UNIQUE_GENERATION_ATTEMPTS; attempt += 1) {
+    for (let attempt = 1; ; attempt += 1) {
       await this.automationService.markStage(
         input.runId,
         AutomationRunStage.GENERATING_QUIZ,
@@ -223,13 +222,9 @@ export class RunAutomationJobUseCase {
       }
 
       console.warn(
-        `[automation] generated quiz repeated ${duplicateQuestions.length} question(s); retrying with more context.`,
+        `[automation] generated quiz repeated ${duplicateQuestions.length} question(s) on attempt ${attempt}; retrying with more context.`,
       );
     }
-
-    throw new Error(
-      `Failed to generate unique quiz for "${input.reference}" after ${UNIQUE_GENERATION_ATTEMPTS} attempts.`,
-    );
   }
 
   private async findDuplicateQuestions(

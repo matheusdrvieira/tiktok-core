@@ -41,22 +41,41 @@ type SaveQuestionHistoryInput = {
   }>;
 };
 
+const STALE_RUNNING_RUN_TIMEOUT_MS = 2 * 60 * 60 * 1000;
+
 export class AutomationService {
   constructor(private readonly prisma: PrismaService) { }
 
   async hasRunningRun(userId: string): Promise<boolean> {
-    const recentRunWindowStartedAt = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    await this.markStaleRunningRunsFailed(userId);
+
     const runningRunsCount = await this.prisma.automationRuns.count({
       where: {
         userId,
         status: AutomationRunStatus.RUNNING,
-        createdAt: {
-          gte: recentRunWindowStartedAt,
-        },
       },
     });
 
     return runningRunsCount > 0;
+  }
+
+  private async markStaleRunningRunsFailed(userId: string): Promise<void> {
+    const staleRunStartedAt = new Date(Date.now() - STALE_RUNNING_RUN_TIMEOUT_MS);
+
+    await this.prisma.automationRuns.updateMany({
+      where: {
+        userId,
+        status: AutomationRunStatus.RUNNING,
+        updatedAt: {
+          lt: staleRunStartedAt,
+        },
+      },
+      data: {
+        status: AutomationRunStatus.FAILED,
+        error: `Automation run stalled for more than ${STALE_RUNNING_RUN_TIMEOUT_MS / 60_000} minutes.`,
+        completedAt: new Date(),
+      },
+    });
   }
 
   async createRun(input: CreateAutomationRunInput) {
