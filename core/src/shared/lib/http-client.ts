@@ -23,10 +23,9 @@ export const mcpApi = createHttpClient({
 
 export const ttsApi = createHttpClient({
   baseURL: env.TTS_BASE_URL,
-  timeout: 180_000,
+  timeout: 7_200_000,
   headers: {
     "Content-Type": "application/json",
-    "x-raw-response": "true",
   },
   responseType: "arraybuffer",
 });

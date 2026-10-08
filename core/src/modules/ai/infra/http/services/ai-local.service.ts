@@ -1,5 +1,6 @@
 import ollama from 'ollama';
 import { logAndReportError } from '../../../../../shared/lib/discord-error';
+import { env } from '../../../../../shared/config/env';
 import { ttsApi } from '../../../../../shared/lib/http-client';
 import { GenerateNarrationInput, GenerateNarrationOutput, GenerateQuizInput, GenerateQuizOutput } from '../../../domain/types/types';
 import { quizResponseSchema } from '../../../schemas/quiz.schemas';
@@ -37,28 +38,13 @@ export class AiLocalService {
   async generateNarration(input: GenerateNarrationInput): Promise<GenerateNarrationOutput> {
     try {
       const response = await ttsApi.post('/v1/audio/speech', {
-        model: 'kokoro',
+        model: 'voxcpm2',
         input: input.text,
-        voice: 'pm_alex',
+        voice: env.TTS_VOICE,
         response_format: 'mp3',
-        download_format: 'mp3',
-        speed: 1,
-        stream: true,
-        return_download_link: false,
-        lang_code: 'p',
-        volume_multiplier: 1,
-        normalization_options: {
-          normalize: true,
-          unit_normalization: false,
-          url_normalization: true,
-          email_normalization: true,
-          optional_pluralization_normalization: true,
-          phone_normalization: true,
-          replace_remaining_symbols: true,
-        },
       });
 
-      return { audioBuffer: response.data };
+      return { audioBuffer: Buffer.from(response.data) };
     } catch (err) {
       logAndReportError('[ai-local][generateNarration] error:', err);
       const message = err instanceof Error ? err.message : 'Unknown error';
